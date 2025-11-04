@@ -17,6 +17,21 @@
 </p>
 <br/>
 
+## Functionalities
+- User management
+    - Signing up
+    - Logging in
+    - Customizing account
+- Server management
+    - Creating servers
+    - Deleting servers
+    - Updating servers
+- Chatting
+    - Posting
+        - Images
+        - Text
+    - Reading chat history   
+
 ## Features
 
 - Works across the entire [Next.js](https://nextjs.org) stack
