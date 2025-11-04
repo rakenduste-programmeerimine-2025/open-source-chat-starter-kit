@@ -16,6 +16,10 @@
   <a href="#more-supabase-examples"><strong>More Examples</strong></a>
 </p>
 <br/>
+## Wireframe
+<img width="1920" height="1080" alt="main" src="https://github.com/user-attachments/assets/3f46e88d-1af9-459f-8408-cad3681d45fb" />
+
+
 
 ## Functionalities
 - User management
