@@ -17,6 +17,26 @@
 </p>
 <br/>
 
+## Wireframe
+<img width="1920" height="1080" alt="main" src="https://github.com/user-attachments/assets/3f46e88d-1af9-459f-8408-cad3681d45fb" />
+
+
+
+## Functionalities
+- User management
+    - Signing up
+    - Logging in
+    - Customizing account
+- Server management
+    - Creating servers
+    - Deleting servers
+    - Updating servers
+- Chatting
+    - Posting
+        - Images
+        - Text
+    - Reading chat history   
+
 ## Features
 
 - Works across the entire [Next.js](https://nextjs.org) stack
