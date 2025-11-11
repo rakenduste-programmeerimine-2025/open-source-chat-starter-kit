@@ -13,20 +13,28 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [sent, setSent] = useState(false)
 
-    const onSubmit = (e: React.FormEvent) => {
+    const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        setTimeout(() => {
+        setSent(false)
+
+        const { error } = await supabase.auth.signInWithOtp({ email })
+
+        if (error) {
+            alert(error.message)
             setLoading(false)
-            setSent(true)
-        }, 1000) // imitation of sending
+            return
+        }
+
+        setSent(true)
+        setLoading(false)
     }
 
     if (sent) {
         return (
             <main className="max-w-sm mx-auto mt-10 text-center">
                 <h1 className="text-xl font-semibold">Check your email</h1>
-                <p>We sent you a link to sign in.</p>
+                <p>We sent you a magic link to sign in.</p>
             </main>
         )
     }
