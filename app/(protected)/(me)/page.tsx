@@ -1,7 +1,7 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer'
 
 export default async function MePage() {
-    const supabase = createSupabaseServerClient()
+    const supabase = await createSupabaseServerClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     return (
