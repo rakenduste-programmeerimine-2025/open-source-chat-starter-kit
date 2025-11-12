@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -12,20 +12,34 @@ export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [sent, setSent] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        const q = window.location.search
+        if (q.includes('code=')) {
+            supabase.auth
+                .exchangeCodeForSession(q)
+                .then(() => {
+                    window.history.replaceState({}, document.title, '/login')
+                    window.location.replace('/me')
+                })
+                .catch(() => {
+                })
+        }
+    }, [])
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        setSent(false)
+        setError(null)
 
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: { emailRedirectTo: 'http://localhost:3000/login' }
         })
 
-
         if (error) {
-            alert(error.message)
+            setError(error.message)
             setLoading(false)
             return
         }
@@ -36,7 +50,7 @@ export default function LoginPage() {
 
     if (sent) {
         return (
-            <main className="max-w-sm mx-auto mt-10 text-center">
+            <main className="max-w-sm mx-auto mt-10 space-y-4 text-center">
                 <h1 className="text-xl font-semibold">Check your email</h1>
                 <p>We sent you a magic link to sign in.</p>
             </main>
@@ -62,6 +76,7 @@ export default function LoginPage() {
                 >
                     {loading ? 'Sending…' : 'Send magic link'}
                 </button>
+                {error && <p className="text-sm text-red-600">{error}</p>}
             </form>
         </main>
     )
