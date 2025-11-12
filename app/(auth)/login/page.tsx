@@ -16,17 +16,27 @@ export default function LoginPage() {
 
     useEffect(() => {
         const q = window.location.search
-        if (q.includes('code=')) {
+        const h = window.location.hash
+
+        const hasCode = q.includes('code=')
+        const hasHashToken = h.includes('access_token') || h.includes('type=magiclink')
+
+        if (hasCode || hasHashToken) {
+            const payload = hasHashToken ? h : q
+
             supabase.auth
-                .exchangeCodeForSession(q)
+                .exchangeCodeForSession(payload)
                 .then(() => {
+
                     window.history.replaceState({}, document.title, '/login')
                     window.location.replace('/me')
                 })
                 .catch(() => {
+
                 })
         }
     }, [])
+
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
