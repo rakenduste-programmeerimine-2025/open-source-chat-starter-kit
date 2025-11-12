@@ -37,7 +37,6 @@ export default function LoginPage() {
         }
     }, [])
 
-
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -46,7 +45,7 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: 'http://localhost:3000/auth/callback',
+                emailRedirectTo: 'http://localhost:3000/callback',
             },
         })
         if (error) {
