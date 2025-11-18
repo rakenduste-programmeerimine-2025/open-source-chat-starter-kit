@@ -1,9 +1,10 @@
-import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabaseServer'
+import type { ReactNode } from 'react'
 
-export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-    const supabase = await createSupabaseServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/login')
+export default function ProtectedLayout({
+    children,
+}: {
+    children: ReactNode
+}) {
+    // На время разработки не делаем тут никаких проверок
     return <>{children}</>
 }

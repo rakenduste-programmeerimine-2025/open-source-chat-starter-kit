@@ -14,10 +14,14 @@ export default function AuthCallbackPage() {
         const access_token = params.get('access_token')
         const refresh_token = params.get('refresh_token')
 
+        console.log('CALLBACK HASH:', hash)
+        console.log('TOKENS:', { access_token, refresh_token })
+
         if (access_token && refresh_token) {
             supabase.auth
                 .setSession({ access_token, refresh_token })
                 .then(({ error }) => {
+                    console.log('setSession result, error =', error)
                     if (error) {
                         console.error('setSession error', error)
                         router.replace('/login')
@@ -26,9 +30,14 @@ export default function AuthCallbackPage() {
                     }
                 })
         } else {
+            console.warn('NO TOKENS IN CALLBACK, redirecting to /login')
             router.replace('/login')
         }
     }, [router])
 
-    return <p className="text-center mt-10">Signing you in…</p>
+    return (
+        <main className="text-center mt-10">
+            <p>Signing you in…</p>
+        </main>
+    )
 }
