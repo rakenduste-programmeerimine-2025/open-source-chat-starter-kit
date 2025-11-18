@@ -5,6 +5,5 @@ export default function ProtectedLayout({
 }: {
     children: ReactNode
 }) {
-    // На время разработки не делаем тут никаких проверок
     return <>{children}</>
 }
