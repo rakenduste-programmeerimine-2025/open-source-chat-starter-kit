@@ -35,7 +35,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
+<<<<<<< HEAD
   ],
+=======
+, "app/me/chat/page.jsx"  ],
+>>>>>>> origin/main
   "exclude": [
     "node_modules"
   ]
