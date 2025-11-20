@@ -16,7 +16,6 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                // ВАЖНО: ведём на /callback, а не на /login
                 emailRedirectTo: 'http://localhost:3000/callback',
             },
         })

@@ -5,7 +5,5 @@ export default function ProtectedLayout({
 }: {
     children: ReactNode
 }) {
-
     return <>{children}</>
 }
-
