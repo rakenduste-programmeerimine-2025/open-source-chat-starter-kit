@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     })
   }
 
-  console.log(data)
+  // console.log(data)
   const servers = (data || []).map(server => ({
     id: server.id,
     name: server.name,
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     created_at: server.created_at,
   }))
 
-  return new Response(JSON.stringify({ servers }), {
+  return new Response(JSON.stringify(servers), {
     headers: { "Content-Type": "application/json" },
   })
 }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       name: body.name,
       created_by: body.created_by,
     })
-    return new Response(JSON.stringify({ server: body }), {
+    return new Response(JSON.stringify(body), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     })
