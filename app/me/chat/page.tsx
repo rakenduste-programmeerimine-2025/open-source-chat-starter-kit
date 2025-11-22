@@ -1,24 +1,22 @@
 "use client"
 
-import { List } from "postcss/lib/list";
 import { CSSProperties, useEffect, useState } from "react";
 
 export default function Page() {
 
-  type ChatMSG = {
-    senderID: string,
-    message: string,
-  }
 
-
-  const [chatList, setChatList] = useState<List<ChatMSG>>()
-
+  const [chatList, setChatList] = useState([[{}]])
+    
   useEffect(() => {
-    let response
-    fetch('http://127.0.0.1:3000/api/messages')
+    fetch('http://localhost:3000/api/messages')
       .then(response => response.json())
-      .then(console.log(response))
-  })
+      .then(response => setChatList(response.data))
+  }, [])
+
+  useEffect(()=>{
+    console.log(chatList)
+  },[chatList])
+  
 
   const window = {
     display: "flex",
@@ -65,7 +63,9 @@ export default function Page() {
         <div style={sidedivL}>
           <div style={scrolldivB}>
             this is a chat box
-
+            {chatList.map((message, key)=>(
+                <div key={key}>{message.message}</div>
+            ))}
           </div>
           <hr style={{borderWidth: "1vh"}}/>
           <div style={scrolldivS}>
