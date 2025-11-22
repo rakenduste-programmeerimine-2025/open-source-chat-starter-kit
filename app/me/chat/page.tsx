@@ -12,9 +12,19 @@ export default function Page() {
     sender_id: string
     sent_on: string
     server_id: string
+    username: string
+  }
+
+  type ServData = {
+    id: string
+    name: string
+    image_url: null
+    created_by: string
+    created_at: string
   }
 
   const [chatList, setChatList] = useState([[{}]]) as unknown as Array<Array<Message>>
+  const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
   useEffect(() => {
     fetch('http://localhost:3000/api/messages')
@@ -22,9 +32,16 @@ export default function Page() {
       .then(response => setChatList(response.data))
   }, [])
 
+  useEffect(() => {
+    fetch('http://localhost:3000/api/servers/f291a9a9-10aa-4057-acdc-7e036d7111ac') //hardcoded lmfaogffs
+      .then(response => response.json())
+      .then(response => setServerData(response))
+  }, [])
+
   useEffect(()=>{
     console.log(chatList)
-  },[chatList])
+    console.warn(serverData)
+  },[chatList, serverData])
   
 
   const window = {
@@ -72,12 +89,12 @@ export default function Page() {
         <div style={sidedivL}>
           <div style={scrolldivB}>
             this is a chat box
-            <div>server name {chatList[0].server_id}</div>
+            <div>server name {serverData[0].name}</div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             {chatList.map((message, key)=>(
                 <div key={key}>
                   <hr />
-                  sent at {message.sent_on}
+                  sent by {message.username} at {message.sent_on}
                   <div style={{backgroundColor: "darkgray"}}>{message.message}</div>
                   <hr />
                 </div>
