@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     username: user.user_metadata?.username || null, // or raw_user_meta_data if available
   }))
 
-  return new Response(JSON.stringify({ users }), {
+  return new Response(JSON.stringify(users), {
     headers: { "Content-Type": "application/json" },
   })
 }
