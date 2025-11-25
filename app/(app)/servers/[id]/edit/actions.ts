@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Parses input and ensures the caller is authenticated.
+ * Updates a server (name, image_url) — RLS enforces owner/admin.
  */
 export async function updateServerAction(serverId: string, formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
@@ -24,5 +24,15 @@ export async function updateServerAction(serverId: string, formData: FormData) {
         redirect("/auth/login");
     }
 
-    return { ok: true, name, image_url };
+    const { error } = await supabase
+        .from("servers")
+        .update({ name, image_url })
+        .eq("id", serverId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    // Revalidation/redirect will be added next.
+    return { ok: true };
 }
