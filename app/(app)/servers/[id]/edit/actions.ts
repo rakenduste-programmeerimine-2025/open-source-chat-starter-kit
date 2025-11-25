@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+/**
+ * Updates a server (name, image_url).
+ * Uses auth.getUser() on the server (secure) and stays on /edit after save.
+ */
 export async function updateServerAction(serverId: string, formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
     const imageUrlRaw = String(formData.get("image_url") ?? "").trim();
@@ -24,8 +28,10 @@ export async function updateServerAction(serverId: string, formData: FormData) {
         .update({ name, image_url })
         .eq("id", serverId);
 
-    if (error) throw new Error(error.message);
+    if (error) {
+        throw new Error(error.message);
+    }
 
     revalidatePath(`/servers/${serverId}/edit`);
-    redirect("/servers");
+    return { ok: true };
 }
