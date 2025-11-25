@@ -36,6 +36,25 @@ export async function updateServerAction(serverId: string, formData: FormData) {
     return { ok: true };
 }
 
-export async function deleteServerAction(_serverId: string) {
-    throw new Error("Not implemented yet");
+export async function deleteServerAction(serverId: string) {
+    if (!serverId) throw new Error("Missing server id");
+
+    const supabase = createClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+        redirect("/auth/login");
+    }
+
+    const { error } = await supabase
+        .from("servers")
+        .delete()
+        .eq("id", serverId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    revalidatePath("/servers");
+    redirect("/servers");
 }
+
