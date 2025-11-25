@@ -1,10 +1,12 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Updates a server (name, image_url) — RLS enforces owner/admin.
+ * Updates a server (name, image_url) and redirects to /servers.
+ * Access controlled by RLS (owner/admin).
  */
 export async function updateServerAction(serverId: string, formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
@@ -29,10 +31,8 @@ export async function updateServerAction(serverId: string, formData: FormData) {
         .update({ name, image_url })
         .eq("id", serverId);
 
-    if (error) {
-        throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
 
-    // Revalidation/redirect will be added next.
-    return { ok: true };
+    revalidatePath(`/servers/${serverId}/edit`);
+    redirect("/servers");
 }
