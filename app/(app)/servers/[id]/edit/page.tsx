@@ -2,19 +2,25 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EditServerForm from "./ui/edit-server-form";
 
-
-type Params = { params: { id: string } };
-
+type Params = { params: { id?: string } };
 
 export default async function EditServerPage({ params }: Params) {
-    const serverId = params.id;
+    console.log("[EditServerPage] params:", params);
+
+    const serverId = params?.id;
+    if (!serverId) {
+        notFound();
+    }
+
     const supabase = createClient();
 
     const {
         data: { session },
     } = await supabase.auth.getSession();
 
-    if (!session?.user) redirect("/auth/login");
+    if (!session?.user) {
+        redirect("/auth/login");
+    }
 
     const { data, error } = await supabase
         .from("servers")
