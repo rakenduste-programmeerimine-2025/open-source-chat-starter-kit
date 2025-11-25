@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import CreateServerForm from "./ui/create-server-form";
+
 
 type ServerRow = {
     id: string;
@@ -31,7 +33,9 @@ export default async function ServersPage() {
         <main className="mx-auto max-w-2xl p-6 space-y-6">
             <header className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold">Servers</h1>
+                <CreateServerForm />
             </header>
+
 
             <ul className="grid gap-3">
                 {servers.length === 0 ? (
