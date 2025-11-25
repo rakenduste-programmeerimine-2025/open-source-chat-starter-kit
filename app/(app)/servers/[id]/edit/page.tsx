@@ -1,4 +1,3 @@
-
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EditServerForm from "./ui/edit-server-form";
@@ -19,6 +18,23 @@ export default async function EditServerPage({
 
     if (!session?.user) {
         redirect("/auth/login");
+    }
+    const userId = session.user.id;
+
+    const { data: memberRow, error: memberErr } = await supabase
+        .from("server_members")
+        .select("role")
+        .eq("server_id", serverId)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if (memberErr) {
+        throw new Error(`membership check failed: ${memberErr.message}`);
+    }
+    if (!memberRow) {
+        throw new Error(
+            `not a member: user=${userId} server=${serverId} (RLS is blocking SELECT on servers)`
+        );
     }
 
     const { data, error } = await supabase
