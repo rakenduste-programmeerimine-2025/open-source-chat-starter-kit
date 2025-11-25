@@ -29,10 +29,11 @@ export default async function EditServerPage({ params }: Params) {
                 <h1 className="text-2xl font-semibold">Edit server</h1>
             </header>
 
-            { }
-            <div className="text-sm text-muted-foreground">
-                Loaded: <span className="font-mono">{data.name}</span>
-            </div>
+            <EditServerForm
+                serverId={data.id}
+                defaultName={data.name}
+                defaultImageUrl={data.image_url}
+            />
         </main>
     );
 }
