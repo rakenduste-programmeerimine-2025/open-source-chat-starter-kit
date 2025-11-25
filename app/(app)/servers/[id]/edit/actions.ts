@@ -35,3 +35,7 @@ export async function updateServerAction(serverId: string, formData: FormData) {
     revalidatePath(`/servers/${serverId}/edit`);
     return { ok: true };
 }
+
+export async function deleteServerAction(_serverId: string) {
+    throw new Error("Not implemented yet");
+}
