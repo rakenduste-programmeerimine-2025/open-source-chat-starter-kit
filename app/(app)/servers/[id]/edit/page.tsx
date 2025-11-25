@@ -12,29 +12,10 @@ export default async function EditServerPage({
     const { id: serverId } = await params;
 
     const supabase = createClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
 
-    if (!session?.user) {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
         redirect("/auth/login");
-    }
-    const userId = session.user.id;
-
-    const { data: memberRow, error: memberErr } = await supabase
-        .from("server_members")
-        .select("role")
-        .eq("server_id", serverId)
-        .eq("user_id", userId)
-        .maybeSingle();
-
-    if (memberErr) {
-        throw new Error(`membership check failed: ${memberErr.message}`);
-    }
-    if (!memberRow) {
-        throw new Error(
-            `not a member: user=${userId} server=${serverId} (RLS is blocking SELECT on servers)`
-        );
     }
 
     const { data, error } = await supabase
