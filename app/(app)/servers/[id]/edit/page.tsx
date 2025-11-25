@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import EditServerForm from "./ui/edit-server-form";
+
 
 type Params = { params: { id: string } };
 
