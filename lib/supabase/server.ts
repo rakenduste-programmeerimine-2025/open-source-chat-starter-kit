@@ -1,5 +1,4 @@
 // lib/supabase/server.ts
-"use server";
 
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
@@ -17,7 +16,7 @@ function isPromise<T>(v: unknown): v is Promise<T> {
 
 /**
  * Synchronous factory that works with both sync and async cookies() in Next 14/15.
- * We keep the function sync; the cookie hooks inside can be async.
+ * Keep this function sync; internal cookie hooks can be async.
  */
 export function createClient() {
   const maybeStore = cookies(); // Next 14: CookieStore; Next 15: Promise<CookieStore>
