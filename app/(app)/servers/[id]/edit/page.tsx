@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createRSCClient } from "@/lib/supabase/server-rsc";
 import EditServerForm from "./ui/edit-server-form";
 import DeleteServerButton from "./ui/delete-server-button";
 
@@ -13,7 +13,7 @@ export default async function EditServerPage({
 }) {
     const { id: serverId } = await params;
 
-    const supabase = createClient();
+    const supabase = createRSCClient();
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData?.user) {

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createRSCClient } from "@/lib/supabase/server-rsc";
 import CreateServerForm from "./ui/create-server-form";
 
 
@@ -14,7 +14,7 @@ type ServerRow = {
  * Servers list (RLS ensures only member servers are returned).
  */
 export default async function ServersPage() {
-    const supabase = createClient();
+    const supabase = createRSCClient();
 
     // authenticate user
     const { data: userData } = await supabase.auth.getUser();
