@@ -30,8 +30,9 @@ export default function EditServerForm({
                 startTransition(async () => {
                     try {
                         await updateServerAction(serverId, formData);
-                    } catch (e: any) {
-                        setError(e?.message || "Failed to update server");
+                    } catch (e: unknown) {
+                        const msg = e instanceof Error ? e.message : "Failed to update server";
+                        setError(msg);
                     }
                 });
             }}
