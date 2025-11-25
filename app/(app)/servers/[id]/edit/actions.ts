@@ -4,10 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-/**
- * Updates a server (name, image_url) and redirects to /servers.
- * Access controlled by RLS (owner/admin).
- */
 export async function updateServerAction(serverId: string, formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
     const imageUrlRaw = String(formData.get("image_url") ?? "").trim();
@@ -17,12 +13,9 @@ export async function updateServerAction(serverId: string, formData: FormData) {
     if (!name) throw new Error("Server name is required");
 
     const supabase = createClient();
-    const {
-        data: { session },
-        error: sessionError,
-    } = await supabase.auth.getSession();
 
-    if (sessionError || !session?.user?.id) {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
         redirect("/auth/login");
     }
 
