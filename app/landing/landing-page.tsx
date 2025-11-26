@@ -13,9 +13,12 @@ const googleSansCode = Google_Sans_Code({
 function LandingPage() {
   return (
     <div className="flex h-screen flex-col">
+        <header className={`flex w-screen flex-row justify-end pr-[2%] pt-[1%] ${googleSansCode.className}`}>
+            <Link href={''}>GitHub</Link>
+        </header>
       <div className="flex-grow">
-        <div className="flex h-1/2 w-screen mt-[5%] flex-row justify-between">
-          <div className="flex w-[40%] bg-gradient-to-b from-violet-600 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo">
+        <div className="flex h-1/2 w-screen mt-[2%] flex-row justify-between">
+          <div className="flex w-[40%] bg-gradient-to-b from-violet-600 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo overflow-hidden">
             <div className={`text-white text-[280%] ${DMserifText.className}`}>
               <div
                 className="opacity-0 animate-fadeInOne"
