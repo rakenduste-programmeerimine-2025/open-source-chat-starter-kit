@@ -10,6 +10,18 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        fadeIn: {
+          from: {opacity: 0},
+          to: {opacity: 1}
+        }
+      },
+      animation :{
+        fadeInOne: 'fadeIn 0.5s ease-in-out forwards',
+        fadeInTwo: 'fadeIn 1s ease-in-out forwards',
+        fadeInThree: 'fadeIn 1.5s ease-in-out forwards',
+        fadeInFour: 'fadeIn 2s ease-in-out forwards',
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

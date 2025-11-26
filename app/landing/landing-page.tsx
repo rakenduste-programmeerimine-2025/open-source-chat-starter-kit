@@ -15,23 +15,48 @@ function LandingPage() {
     <div className="flex h-screen flex-col">
       <div className="flex-grow">
         <div className="flex bg-red-900 h-1/2 w-screen mt-[5%] flex-row justify-between">
-          <div className="flex w-[40%] bg-gradient-to-b from-violet-400 to-blue-900 rounded-xl border-white border-4">
+          <div className="flex w-[40%] bg-gradient-to-b from-violet-400 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo">
             <div className={`text-white text-[280%] ${DMserifText.className}`}>
-              <div>You create,</div>
-              <div>You invite,</div>
-              <div>You talk</div>
-              <div>Simple as that</div>
-              <div className="underline">No hidden agenda, no corporate BS</div>
+              <div
+                className="opacity-0 animate-fadeInOne"
+                style={{ animationDelay: "200ms" }}
+              >
+                You create,
+              </div>
+              <div
+                className="opacity-0 animate-fadeInOne
+                "
+                style={{ animationDelay: "400ms" }}
+              >
+                You invite,
+              </div>
+              <div
+                className="opacity-0 animate-fadeInOne"
+                style={{ animationDelay: "600ms" }}
+              >
+                You talk
+              </div>
+              <div
+                className="opacity-0 animate-fadeInOne"
+                style={{ animationDelay: "800ms" }}
+              >
+                Simple as that
+              </div>
+              <div className="underline opacity-0 animate-fadeInOne" style={{animationDelay:'1000ms'}}>No hidden agenda, no corporate BS</div>
             </div>
           </div>
-          <div className="flex w-[40%] bg-pink-700 border-4 border-white rounded-xl">
+          <div
+            className="opacity-0 flex w-[40%] bg-pink-700 border-4 border-white rounded-xl animate-fadeInTwo"
+            style={{ animationDelay: "200ms" }}
+          >
             <div>image or something in here</div>
           </div>
         </div>
         <div className="justify-between flex flex-row w-screen h-[10%] mt-[3%] bg-red-500">
           <Link
             href={"/auth/sign-up"}
-            className="flex flex-col bg-gradient-to-t from-blue-800 to-gray-900 w-[10%] ml-[30%] border-4 border-black rounded-xl"
+            className="opacity-0 flex flex-col bg-gradient-to-t from-blue-800 to-gray-900 w-[10%] ml-[30%] border-4 border-black rounded-xl animate-fadeInThree"
+            style={{ animationDelay: "400ms" }}
           >
             <div
               className={`items-center justify-center overflow-hidden ${googleSansCode.className} hover:underline`}
@@ -41,7 +66,8 @@ function LandingPage() {
           </Link>
           <Link
             href={"/auth/login"}
-            className="flex flex-col bg-gradient-to-t from-green-800 to-gray-900 w-[10%] mr-[30%] border-4 border-black overflow-hidden rounded-xl"
+            className="flex flex-col bg-gradient-to-t from-green-800 to-gray-900 w-[10%] mr-[30%] border-4 border-black overflow-hidden rounded-xl opacity-0 animate-fadeInThree"
+            style={{ animationDelay: "600ms" }}
           >
             <div className={`${googleSansCode.className} hover:underline`}>
               <div>Already have an account?</div>
