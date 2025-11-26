@@ -14,11 +14,11 @@ function LandingPage() {
   return (
     <div className="flex h-screen flex-col">
         <header className={`flex w-screen flex-row justify-end pr-[2%] pt-[1%] ${googleSansCode.className}`}>
-            <Link href={''}>GitHub</Link>
+            <Link href={'https://github.com/rakenduste-programmeerimine-2025/open-source-chat-starter-kit'}>GitHub</Link>
         </header>
       <div className="flex-grow">
         <div className="flex h-1/2 w-screen mt-[2%] flex-row justify-between">
-          <div className="flex w-[40%] bg-gradient-to-b from-violet-600 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo overflow-hidden">
+          <div className="flex w-[40%] bg-gradient-to-b from-violet-600 to-blue-900 rounded-xl animate-fadeInTwo overflow-hidden ml-[1%]">
             <div className={`text-white text-[280%] ${DMserifText.className}`}>
               <div
                 className="opacity-0 animate-fadeInOne"
@@ -37,7 +37,7 @@ function LandingPage() {
                 className="opacity-0 animate-fadeInOne"
                 style={{ animationDelay: "600ms" }}
               >
-                You talk
+                You talk.
               </div>
               <div
                 className="opacity-0 animate-fadeInOne"
@@ -54,7 +54,7 @@ function LandingPage() {
             </div>
           </div>
           <div
-            className="opacity-0 flex w-[40%] bg-pink-700 border-4 border-white rounded-xl animate-fadeInTwo"
+            className="opacity-0 flex w-[40%] bg-pink-700 rounded-xl animate-fadeInTwo mr-[1%]"
             style={{ animationDelay: "200ms" }}
           >
             <div>image or something in here</div>
