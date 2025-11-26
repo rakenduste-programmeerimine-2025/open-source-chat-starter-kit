@@ -1,5 +1,6 @@
 import React from "react"
 import { DM_Serif_Text, Google_Sans_Code } from "next/font/google"
+import Link from "next/link"
 
 const DMserifText = DM_Serif_Text({
   weight: "400",
@@ -28,19 +29,25 @@ function LandingPage() {
           </div>
         </div>
         <div className="justify-between flex flex-row w-screen h-[10%] mt-[3%] bg-red-500">
-          <div className="flex flex-col bg-gradient-to-t from-blue-800 to-gray-900 w-[10%] ml-[30%] border-4 border-black rounded-xl">
+          <Link
+            href={"/auth/sign-up"}
+            className="flex flex-col bg-gradient-to-t from-blue-800 to-gray-900 w-[10%] ml-[30%] border-4 border-black rounded-xl"
+          >
             <div
-              className={`items-center justify-center overflow-hidden ${googleSansCode.className}`}
+              className={`items-center justify-center overflow-hidden ${googleSansCode.className} hover:underline`}
             >
               Create an account and get started today
             </div>
-          </div>
-          <div className="flex flex-col bg-gradient-to-t from-green-800 to-gray-900 w-[10%] mr-[30%] border-4 border-black overflow-hidden rounded-xl">
-            <div className={`${googleSansCode.className}`}>
+          </Link>
+          <Link
+            href={"/auth/login"}
+            className="flex flex-col bg-gradient-to-t from-green-800 to-gray-900 w-[10%] mr-[30%] border-4 border-black overflow-hidden rounded-xl"
+          >
+            <div className={`${googleSansCode.className} hover:underline`}>
               <div>Already have an account?</div>
               <div>Log in</div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
       <footer className="bg-gray-800 text-white p-6">
