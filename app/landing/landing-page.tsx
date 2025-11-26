@@ -14,8 +14,8 @@ function LandingPage() {
   return (
     <div className="flex h-screen flex-col">
       <div className="flex-grow">
-        <div className="flex bg-red-900 h-1/2 w-screen mt-[5%] flex-row justify-between">
-          <div className="flex w-[40%] bg-gradient-to-b from-violet-400 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo">
+        <div className="flex h-1/2 w-screen mt-[5%] flex-row justify-between">
+          <div className="flex w-[40%] bg-gradient-to-b from-violet-600 to-blue-900 rounded-xl border-white border-4 animate-fadeInTwo">
             <div className={`text-white text-[280%] ${DMserifText.className}`}>
               <div
                 className="opacity-0 animate-fadeInOne"
@@ -42,7 +42,12 @@ function LandingPage() {
               >
                 Simple as that
               </div>
-              <div className="underline opacity-0 animate-fadeInOne" style={{animationDelay:'1000ms'}}>No hidden agenda, no corporate BS</div>
+              <div
+                className="underline opacity-0 animate-fadeInOne"
+                style={{ animationDelay: "1000ms" }}
+              >
+                No hidden agenda, no corporate BS
+              </div>
             </div>
           </div>
           <div
@@ -52,31 +57,31 @@ function LandingPage() {
             <div>image or something in here</div>
           </div>
         </div>
-        <div className="justify-between flex flex-row w-screen h-[10%] mt-[3%] bg-red-500">
+        <div className="justify-between flex flex-row w-screen h-[10%] mt-[3%]">
           <Link
             href={"/auth/sign-up"}
-            className="opacity-0 flex flex-col bg-gradient-to-t from-blue-800 to-gray-900 w-[10%] ml-[30%] border-4 border-black rounded-xl animate-fadeInThree"
+            className="opacity-0 flex flex-col bg-white w-[10%] ml-[33%] rounded-xl animate-fadeInThree items-center justify-center"
             style={{ animationDelay: "400ms" }}
           >
             <div
-              className={`items-center justify-center overflow-hidden ${googleSansCode.className} hover:underline`}
+              className={`text-black text-center overflow-hidden ${googleSansCode.className} hover:underline`}
             >
               Create an account and get started today
             </div>
           </Link>
           <Link
             href={"/auth/login"}
-            className="flex flex-col bg-gradient-to-t from-green-800 to-gray-900 w-[10%] mr-[30%] border-4 border-black overflow-hidden rounded-xl opacity-0 animate-fadeInThree"
+            className="flex flex-col items-center justify-center bg-gray-800 w-[10%] mr-[33%] overflow-hidden rounded-xl opacity-0 animate-fadeInThree"
             style={{ animationDelay: "600ms" }}
           >
-            <div className={`${googleSansCode.className} hover:underline`}>
+            <div className={`${googleSansCode.className} hover:underline text-center`}>
               <div>Already have an account?</div>
               <div>Log in</div>
             </div>
           </Link>
         </div>
       </div>
-      <footer className="bg-gray-800 text-white p-6">
+      <footer className="text-white p-6">
         <div className="flex flex-col items-center justify-center">
           <div>Created by @marmarsell, @RenatMagsumov, @ReDerEE</div>
           <div>Tallinn 2025</div>
