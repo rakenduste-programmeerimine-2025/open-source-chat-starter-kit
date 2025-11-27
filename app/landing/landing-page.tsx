@@ -63,7 +63,7 @@ function LandingPage() {
         <div className="justify-between flex flex-row w-screen h-[10%] mt-[3%]">
           <Link
             href={"/auth/sign-up"}
-            className="opacity-0 flex flex-col bg-white w-[10%] ml-[33%] rounded-xl animate-fadeInThree items-center justify-center"
+            className="opacity-0 flex flex-col bg-white w-[10%] ml-[33%] rounded-xl animate-fadeInThree items-center justify-center hover:shadow-[0px_0px_15px_2px_rgba(255,255,255,1)] transition-shadow ease-in-out"
             style={{ animationDelay: "400ms" }}
           >
             <div
@@ -74,7 +74,7 @@ function LandingPage() {
           </Link>
           <Link
             href={"/auth/login"}
-            className="flex flex-col items-center justify-center bg-gray-800 w-[10%] mr-[33%] overflow-hidden rounded-xl opacity-0 animate-fadeInThree"
+            className="flex flex-col items-center justify-center bg-gray-800 w-[10%] mr-[33%] overflow-hidden rounded-xl opacity-0 animate-fadeInThree hover:shadow-[0px_0px_15px_2px_rgba(200,200,200,1)] transition-shadow ease-in-out"
             style={{ animationDelay: "600ms" }}
           >
             <div className={`${googleSansCode.className} hover:underline text-center`}>
