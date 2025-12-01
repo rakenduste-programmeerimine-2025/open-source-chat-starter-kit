@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { createRSCClient } from "@/lib/supabase/server-rsc";
+
 type RouteParams = { id: string };
 
 export default async function ServerViewPage({
@@ -5,6 +8,13 @@ export default async function ServerViewPage({
 }: {
     params: Promise<RouteParams>;
 }) {
-    const { id } = await params; // Next 15: unwrap
+    const { id } = await params;
+
+    const supabase = createRSCClient();
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData?.user) {
+        redirect("/auth/login");
+    }
+
     return <main className="p-6">Server page for {id}</main>;
 }
