@@ -2,7 +2,7 @@ import { createRSCClient } from "@/lib/supabase/server-rsc";
 
 type Msg = {
     id: string;
-    author_id: string;
+    author: string;
     content: string | null;
     image_url: string | null;
     created_at: string;
@@ -13,7 +13,7 @@ export default async function MessagesList({ serverId }: { serverId: string }) {
 
     const { data, error } = await supabase
         .from("messages")
-        .select("id, author_id, content, image_url, created_at")
+        .select("id, author, content, image_url, created_at")
         .eq("server_id", serverId)
         .order("created_at", { ascending: true })
         .limit(100);
@@ -30,9 +30,7 @@ export default async function MessagesList({ serverId }: { serverId: string }) {
                 messages.map((m) => (
                     <li key={m.id} className="rounded-lg border p-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">
-                                {m.author_id}
-                            </span>
+                            <span className="text-xs text-muted-foreground">{m.author}</span>
                             <span className="text-xs text-muted-foreground">
                                 {new Date(m.created_at).toLocaleString()}
                             </span>
