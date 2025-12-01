@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createRSCClient } from "@/lib/supabase/server-rsc";
 import EditServerForm from "./ui/edit-server-form";
+import DeleteServerButton from "./ui/delete-server-button";
+
 
 type RouteParams = { id: string };
 
@@ -11,7 +13,7 @@ export default async function EditServerPage({
 }) {
     const { id: serverId } = await params;
 
-    const supabase = createClient();
+    const supabase = createRSCClient();
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData?.user) {
@@ -31,6 +33,7 @@ export default async function EditServerPage({
         <main className="mx-auto max-w-2xl p-6 space-y-6">
             <header className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold">Edit server</h1>
+                <DeleteServerButton serverId={data.id} />
             </header>
 
             <EditServerForm

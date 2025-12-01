@@ -35,3 +35,26 @@ export async function updateServerAction(serverId: string, formData: FormData) {
     revalidatePath(`/servers/${serverId}/edit`);
     return { ok: true };
 }
+
+export async function deleteServerAction(serverId: string) {
+    if (!serverId) throw new Error("Missing server id");
+
+    const supabase = createClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+        redirect("/auth/login");
+    }
+
+    const { error } = await supabase
+        .from("servers")
+        .delete()
+        .eq("id", serverId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    revalidatePath("/servers");
+    redirect("/servers");
+}
+
