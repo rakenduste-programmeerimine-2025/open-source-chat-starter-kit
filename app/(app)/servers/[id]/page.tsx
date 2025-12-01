@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createRSCClient } from "@/lib/supabase/server-rsc";
+import MembersList from "./ui/members-list";
 
 type RouteParams = { id: string };
 
@@ -53,6 +54,10 @@ export default async function ServerViewPage({
                 <p className="text-xs text-muted-foreground">
                     Created at: {new Date(data.created_at).toLocaleString()}
                 </p>
+            </section>
+            <section className="space-y-3">
+                <h2 className="text-lg font-semibold">Members</h2>
+                <MembersList serverId={data.id} />
             </section>
         </main>
     );
