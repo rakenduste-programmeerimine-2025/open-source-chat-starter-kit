@@ -20,12 +20,40 @@ export default async function ServerViewPage({
         .eq("id", serverId)
         .maybeSingle();
 
-    if (error) {
-        throw new Error(error.message);
-    }
-    if (!data) {
-        notFound();
-    }
+    if (error) throw new Error(error.message);
+    if (!data) notFound();
 
-    return <main className="p-6">Loaded: {data.name}</main>;
+    return (
+        <main className="mx-auto max-w-2xl p-6 space-y-6">
+            <header className="flex items-center justify-between">
+                <h1 className="text-2xl font-semibold">{data.name}</h1>
+                <div className="flex items-center gap-2">
+                    <a className="text-sm underline" href={`/servers/${data.id}/edit`}>
+                        Edit
+                    </a>
+                    <a className="text-sm underline" href={`/servers`}>
+                        Back
+                    </a>
+                </div>
+            </header>
+
+            <section className="space-y-2">
+                {data.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={data.image_url}
+                        alt={data.name}
+                        className="w-full max-w-md rounded-xl border object-cover"
+                    />
+                ) : (
+                    <div className="w-full max-w-md rounded-xl border p-6 text-sm text-muted-foreground">
+                        No image provided.
+                    </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                    Created at: {new Date(data.created_at).toLocaleString()}
+                </p>
+            </section>
+        </main>
+    );
 }
