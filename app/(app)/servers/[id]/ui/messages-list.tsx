@@ -27,14 +27,14 @@ export default async function MessagesList({ serverId }: { serverId: string }) {
                 <li className="text-sm text-muted-foreground">No messages yet.</li>
             ) : (
                 rows.map((m) => (
-                    <li key={m.id} className="rounded-lg border p-3">
+                    <li key={m.id} className="rounded-lg border bg-white p-3 shadow-sm">
                         <div className="flex items-center justify-between">
                             <span className="text-xs text-muted-foreground">{m.sender_id}</span>
                             <span className="text-xs text-muted-foreground">
                                 {m.sent_on ? new Date(m.sent_on).toLocaleString() : "-"}
                             </span>
                         </div>
-                        {m.message && <p className="mt-1">{m.message}</p>}
+                        {m.message && <p className="mt-1 leading-relaxed">{m.message}</p>}
                     </li>
                 ))
             )}
