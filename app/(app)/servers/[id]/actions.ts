@@ -52,41 +52,15 @@ export async function postMessageAction(serverId: string, formData: FormData) {
     const supabase = createClient();
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr || !userData?.user) redirect("/auth/login");
-    const uid = userData.user.id;
 
-    const tryInsert = async (authorColumn: "author" | "author_id" | "user_id") => {
-        const payload: Record<string, unknown> = {
-            server_id: serverId,
-            content,
-            image_url: null,
-        };
-        payload[authorColumn] = uid;
+    const { error } = await supabase.from("messages").insert({
+        server_id: serverId,
+        sender_id: userData.user.id,
+        message: content,
+    });
 
-        const { error } = await supabase.from("messages").insert(payload);
-        return error as { code?: string; message: string } | null;
-    };
+    if (error) throw new Error(error.message);
 
-    const order: Array<"author" | "author_id" | "user_id"> = [
-        "author",
-        "author_id",
-        "user_id",
-    ];
-
-    let lastErr: { code?: string; message: string } | null = null;
-    for (const col of order) {
-        const err = await tryInsert(col);
-        if (!err) {
-            revalidatePath(`/servers/${serverId}`);
-            return { ok: true };
-        }
-        if (err.code === "42703" || /does not exist/i.test(err.message)) {
-            lastErr = err;
-            continue;
-        }
-        throw new Error(err.message);
-    }
-
-    throw new Error(
-        lastErr?.message || "Failed to insert message: unknown author column"
-    );
+    revalidatePath(`/servers/${serverId}`);
+    return { ok: true };
 }
