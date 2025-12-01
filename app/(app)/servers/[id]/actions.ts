@@ -43,3 +43,26 @@ export async function addMemberAction(serverId: string, formData: FormData) {
     revalidatePath(`/servers/${serverId}`);
     return { ok: true };
 }
+
+export async function postMessageAction(serverId: string, formData: FormData) {
+    const content = String(formData.get("content") ?? "").trim();
+    if (!serverId) throw new Error("Missing server id");
+    if (!content) throw new Error("Message content is required");
+
+    const supabase = createClient();
+
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) redirect("/auth/login");
+
+    const { error } = await supabase.from("messages").insert({
+        server_id: serverId,
+        author_id: userData.user.id,
+        content,
+        image_url: null,
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath(`/servers/${serverId}`);
+    return { ok: true };
+}
