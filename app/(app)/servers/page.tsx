@@ -46,37 +46,28 @@ export default async function ServersPage() {
                     </li>
                 ) : (
                     servers.map((s) => (
-                        <li
-                            key={s.id}
-                            className="border rounded-xl p-4 flex items-center gap-3"
-                        >
+                        <li key={s.id} className="border rounded-xl p-4 flex items-center gap-3">
                             <div className="size-10 rounded-lg bg-muted overflow-hidden flex items-center justify-center">
                                 {s.image_url ? (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={s.image_url}
-                                        alt={s.name}
-                                        className="h-full w-full object-cover"
-                                    />
+                                    <img src={s.image_url} alt={s.name} className="h-full w-full object-cover" />
                                 ) : (
-                                    <span className="text-xs font-medium">
-                                        {s.name.slice(0, 2).toUpperCase()}
-                                    </span>
+                                    <span className="text-xs font-medium">{s.name.slice(0, 2).toUpperCase()}</span>
                                 )}
                             </div>
                             <div className="flex-1">
-                                <div className="font-medium">{s.name}</div>
+                                <a href={`/servers/${s.id}`} className="font-medium underline-offset-2 hover:underline">
+                                    {s.name}
+                                </a>
                                 <div className="text-xs text-muted-foreground">
                                     {new Date(s.created_at).toLocaleString()}
                                 </div>
                             </div>
-                            <a
-                                href={`/servers/${s.id}/edit`}
-                                className="text-sm underline"
-                            >
+                            <a className="text-sm underline" href={`/servers/${s.id}/edit`}>
                                 Edit
                             </a>
                         </li>
+
                     ))
                 )}
             </ul>
