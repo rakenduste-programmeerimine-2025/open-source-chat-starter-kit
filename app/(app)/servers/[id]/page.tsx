@@ -2,6 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { createRSCClient } from "@/lib/supabase/server-rsc";
 import MembersList from "./ui/members-list";
 import AddMemberForm from "./ui/add-member-form";
+import MessagesList from "./ui/messages-list";
+import PostMessageForm from "./ui/post-message-form";
+
 
 type RouteParams = { id: string };
 
@@ -63,6 +66,14 @@ export default async function ServerViewPage({
                 </div>
                 <MembersList serverId={data.id} />
             </section>
+            <section className="space-y-3">
+                <h2 className="text-lg font-semibold">Chat</h2>
+                <div className="rounded-xl border p-4">
+                    <MessagesList serverId={data.id} />
+                </div>
+                <PostMessageForm serverId={data.id} />
+            </section>
+
 
         </main>
     );
