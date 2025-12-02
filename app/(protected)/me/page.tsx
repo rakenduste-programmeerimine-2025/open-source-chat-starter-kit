@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { uploadAvatar } from "@/lib/storage";
 
 type Profile = {
@@ -19,15 +19,13 @@ export default function MePage() {
 
     useEffect(() => {
         (async () => {
-            const supabase = createClient();
-            const {
-                data: { user },
-                error: userErr,
-            } = await supabase.auth.getUser();
+            const supabase = createBrowserSupabaseClient();
+            const { data: { user }, error: userErr } = await supabase.auth.getUser();
             if (userErr || !user) {
                 window.location.href = "/auth/login";
                 return;
             }
+
             const { data } = await supabase
                 .from("profiles")
                 .select("id, display_name, avatar_url")
@@ -35,13 +33,13 @@ export default function MePage() {
                 .maybeSingle();
 
             if (!data) {
-                // ensure row exists
                 await supabase.from("profiles").insert({ id: user.id }).select().single();
                 setProfile({ id: user.id, display_name: null, avatar_url: null });
             } else {
                 setProfile(data as Profile);
                 setName(data.display_name ?? "");
             }
+
             setLoading(false);
         })();
     }, []);
@@ -51,7 +49,7 @@ export default function MePage() {
         setSaving(true);
         setError(null);
         try {
-            const supabase = createClient();
+            const supabase = createBrowserSupabaseClient();
             const { error } = await supabase
                 .from("profiles")
                 .update({ display_name: name })
@@ -59,11 +57,7 @@ export default function MePage() {
             if (error) throw error;
             setProfile((p) => (p ? { ...p, display_name: name } : p));
         } catch (e: unknown) {
-            if (e instanceof Error) {
-                setError(e.message || "Failed to save");
-            } else {
-                setError("Failed to save");
-            }
+            setError(e instanceof Error ? e.message : "Failed to save");
         } finally {
             setSaving(false);
         }
@@ -76,7 +70,7 @@ export default function MePage() {
         try {
             setSaving(true);
             const url = await uploadAvatar(file, profile.id);
-            const supabase = createClient();
+            const supabase = createBrowserSupabaseClient();
             const { error } = await supabase
                 .from("profiles")
                 .update({ avatar_url: url })
@@ -84,15 +78,10 @@ export default function MePage() {
             if (error) throw error;
             setProfile((p) => (p ? { ...p, avatar_url: url } : p));
         } catch (e: unknown) {
-            if (e instanceof Error) {
-                setError(e.message || "Failed to upload avatar");
-            } else {
-                setError("Failed to upload avatar");
-            }
+            setError(e instanceof Error ? e.message : "Failed to upload avatar");
         } finally {
             setSaving(false);
         }
-
     }
 
     if (loading) return <main className="p-6">Loading…</main>;
