@@ -30,14 +30,16 @@ export default async function ServerViewPage({
     if (!data) notFound();
 
     // initial messages for MessagesPanel
-    const { data: initialItems, count: totalCount, error: msgsErr } = await supabase
+    const { data: initialDesc, error: msgsErr } = await supabase
         .from("messages")
-        .select("id, server_id, sender_id, message, sent_on", { count: "exact" })
+        .select("id, server_id, sender_id, message, sent_on")
         .eq("server_id", serverId)
         .order("sent_on", { ascending: false })
-        .limit(30);
+        .limit(10);
 
     if (msgsErr) throw new Error(msgsErr.message);
+
+    const initialItems = (initialDesc ?? []).reverse();
 
     const showHistory = (totalCount ?? (initialItems?.length ?? 0)) >= 20;
 
@@ -103,10 +105,7 @@ export default async function ServerViewPage({
                 <section className="flex min-h-[calc(100vh-120px)] flex-col rounded-xl border">
                     {/* history (scroll area) */}
                     <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                        <MessagesPanel
-                            serverId={data.id}
-                            initialItems={(initialItems ?? []).reverse()}
-                        />
+                        <MessagesPanel serverId={data.id} initialItems={initialItems} />
                     </div>
 
                     {/* input */}
