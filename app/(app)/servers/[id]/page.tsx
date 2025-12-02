@@ -1,42 +1,54 @@
 import { notFound, redirect } from "next/navigation";
-import { createRSCClient } from "@/lib/supabase/server-rsc";
-import MembersList from "./ui/members-list";
+import { createClient } from "@/lib/supabase/server";
 import AddMemberForm from "./ui/add-member-form";
+import MembersList from "./ui/members-list";
 import MessagesList from "./ui/messages-list";
 import PostMessageForm from "./ui/post-message-form";
-
-
-type RouteParams = { id: string };
 
 export default async function ServerViewPage({
     params,
 }: {
-    params: Promise<RouteParams>;
+    params: { id: string };
 }) {
-    const { id: serverId } = await params;
-
-    const supabase = createRSCClient();
+    const supabase = createClient();
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) redirect("/auth/login");
 
+    const serverId = params.id;
+
+    // Получаем сервер и проверяем, что пользователь является участником
     const { data, error } = await supabase
         .from("servers")
-        .select("id, name, image_url, created_at")
+        .select("*")
         .eq("id", serverId)
-        .maybeSingle();
+        .single();
 
     if (error) throw new Error(error.message);
     if (!data) notFound();
 
+    // Проверяем, что пользователь участник этого сервера
+    const { data: memberRow } = await supabase
+        .from("server_members")
+        .select("role")
+        .eq("server_id", serverId)
+        .eq("user_id", userData.user.id)
+        .maybeSingle();
+
+    if (!memberRow) {
+        throw new Error(
+            `not a member: user=${userData.user.id} server=${serverId} (RLS blocking access)`
+        );
+    }
+
     return (
-        <main className="mx-auto max-w-6xl p-6">
-            {/* 2-sided layout */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px,1fr]">
-                {/* LEFT SIDEBAR */}
+        <main className="w-full min-h-screen max-w-none p-4 md:p-6">
+            {/* 2 columns */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[340px,1fr] h-full">
+                {/* left column */}
                 <aside className="space-y-6">
+                    {/* server info */}
                     <section className="rounded-xl border p-4">
                         <header className="mb-3 flex items-center gap-3">
-                            {/* image */}
                             {data.image_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
@@ -52,41 +64,51 @@ export default async function ServerViewPage({
                             <div>
                                 <h1 className="text-lg font-semibold">{data.name}</h1>
                                 <p className="text-xs text-muted-foreground">
-                                    Created: {data.created_at ? new Date(data.created_at).toLocaleString() : "-"}
+                                    Created:{" "}
+                                    {data.created_at
+                                        ? new Date(data.created_at).toLocaleString()
+                                        : "-"}
                                 </p>
                             </div>
                         </header>
+
                         <div className="flex gap-3">
-                            <a className="text-sm underline" href={`/servers/${data.id}/edit`}>
+                            <a
+                                className="text-sm underline underline-offset-2 hover:text-blue-600"
+                                href={`/servers/${data.id}/edit`}
+                            >
                                 Edit
                             </a>
-                            <a className="text-sm underline" href={`/servers`}>
+                            <a
+                                className="text-sm underline underline-offset-2 hover:text-blue-600"
+                                href={`/servers`}
+                            >
                                 Back
                             </a>
                         </div>
                     </section>
 
-                    {/* Invite by user id */}
+                    {/* add by user_id */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Invite member</h2>
                         <AddMemberForm serverId={data.id} />
                     </section>
 
-                    {/* Members list */}
+                    {/* members list */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Members</h2>
                         <MembersList serverId={data.id} />
                     </section>
                 </aside>
 
-                {/* RIGHT: CHAT COLUMN */}
-                <section className="flex min-h-[70vh] flex-col rounded-xl border">
+                {/* chat*/}
+                <section className="flex min-h-[80vh] md:min-h-[85vh] flex-col rounded-xl border">
                     <div className="border-b p-4">
                         <h2 className="text-lg font-semibold">Chat</h2>
                     </div>
 
-                    {/* messages */}
-                    <div className="flex-1 overflow-y-auto p-4">
+                    {/* messages list*/}
+                    <div className="min-h-0 flex-1 overflow-y-auto p-4">
                         <div className="mx-auto max-w-2xl">
                             <MessagesList serverId={data.id} />
                         </div>
