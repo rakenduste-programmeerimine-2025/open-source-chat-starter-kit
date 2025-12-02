@@ -4,6 +4,7 @@ import MembersList from "./ui/members-list";
 import AddMemberForm from "./ui/add-member-form";
 import MessagesList from "./ui/messages-list";
 import PostMessageForm from "./ui/post-message-form";
+import MessagesPanel from "./ui/messages-panel";
 
 
 type RouteParams = { id: string };
@@ -27,6 +28,15 @@ export default async function ServerViewPage({
 
     if (error) throw new Error(error.message);
     if (!data) notFound();
+
+    // initial messages for MessagesPanel
+    const { data: initialItems } = await supabase
+        .from("messages")
+        .select("id, server_id, sender_id, message, sent_on")
+        .eq("server_id", serverId)
+        .order("sent_on", { ascending: false })
+        .limit(30);
+
 
     return (
         <main className="flex min-h-screen w-full max-w-none p-4 md:p-6">
@@ -103,11 +113,10 @@ export default async function ServerViewPage({
                     </div>
 
                     {/*  message input */}
-                    <div className="border-t p-4">
-                        <div className="mx-auto max-w-2xl">
-                            <PostMessageForm serverId={data.id} />
-                        </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                        <MessagesPanel serverId={data.id} initialItems={(initialItems ?? []).reverse()} />
                     </div>
+
                 </section>
             </div>
         </main>
