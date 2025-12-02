@@ -29,10 +29,10 @@ export default async function ServerViewPage({
     if (!data) notFound();
 
     return (
-        <main className="w-full min-h-screen max-w-none p-4 md:p-6">
-            {/* 2 columns */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-[340px,1fr] h-full">
-                {/* left column */}
+        <main className="flex min-h-screen w-full max-w-none p-4 md:p-6">
+            {/* two-column responsive layout: left = info, right = chat */}
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 md:grid-cols-[340px,1fr]">
+                {/* LEFT SIDEBAR */}
                 <aside className="space-y-6">
                     {/* server info */}
                     <section className="rounded-xl border p-4">
@@ -60,7 +60,7 @@ export default async function ServerViewPage({
                             </div>
                         </header>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-3">
                             <a
                                 className="text-sm underline underline-offset-2 hover:text-blue-600"
                                 href={`/servers/${data.id}/edit`}
@@ -76,33 +76,33 @@ export default async function ServerViewPage({
                         </div>
                     </section>
 
-                    {/* add user by user_id */}
+                    {/* invite by user id */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Invite member</h2>
                         <AddMemberForm serverId={data.id} />
                     </section>
 
-                    {/* member list */}
+                    {/* members list */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Members</h2>
                         <MembersList serverId={data.id} />
                     </section>
                 </aside>
 
-                {/* right column chat */}
-                <section className="flex min-h-[80vh] md:min-h-[85vh] flex-col rounded-xl border">
+                {/* RIGHT COLUMN: chat */}
+                <section className="flex min-h-0 flex-col rounded-xl border">
                     <div className="border-b p-4">
                         <h2 className="text-lg font-semibold">Chat</h2>
                     </div>
 
-                    {/* messages list */}
+                    {/* scrollable messages area */}
                     <div className="min-h-0 flex-1 overflow-y-auto p-4">
                         <div className="mx-auto max-w-2xl">
                             <MessagesList serverId={data.id} />
                         </div>
                     </div>
 
-                    {/* send form */}
+                    {/*  message input */}
                     <div className="border-t p-4">
                         <div className="mx-auto max-w-2xl">
                             <PostMessageForm serverId={data.id} />
@@ -112,5 +112,6 @@ export default async function ServerViewPage({
             </div>
         </main>
     );
+
 
 }
