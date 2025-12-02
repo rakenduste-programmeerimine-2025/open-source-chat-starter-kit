@@ -1,55 +1,37 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { createRSCClient } from "@/lib/supabase/server-rsc";
 import RemoveMemberButton from "./remove-member-button";
 
-type Member = {
-    user_id: string;
-    role: string;
-    joined_at: string;
-};
+export default async function MembersList({ serverId }: { serverId: string }) {
+    const supabase = createRSCClient();
 
-interface MembersListProps {
-    serverId: string;
-}
+    // who am I?
+    const { data: userData } = await supabase.auth.getUser();
+    const currentUserId = userData?.user?.id ?? null;
 
-export default function MembersList({ serverId }: MembersListProps) {
-    const [members, setMembers] = useState<Member[]>([]);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [canManage, setCanManage] = useState(false);
+    // what is my role in this server?
+    const { data: myRow } = await supabase
+        .from("server_members")
+        .select("role")
+        .eq("server_id", serverId)
+        .eq("user_id", currentUserId)
+        .maybeSingle();
 
-    useEffect(() => {
-        const fetchMembers = async () => {
-            const supabase = createRSCClient();
+    const myRole = myRow?.role ?? null;
+    const canManage = myRole === "owner" || myRole === "admin";
 
-            // current user
-            const {
-                data: { user },
-            } = await supabase.auth.getUser();
-            if (user) setCurrentUserId(user.id);
+    // list members
+    const { data, error } = await supabase
+        .from("server_members")
+        .select("user_id, role, joined_at")
+        .eq("server_id", serverId)
+        .order("joined_at", { ascending: false });
 
-            // all users
-            const { data, error } = await supabase
-                .from("server_members")
-                .select("user_id, role, joined_at")
-                .eq("server_id", serverId)
-                .order("joined_at", { ascending: true });
+    if (error) {
+        throw new Error(error.message);
+    }
 
-            if (error) {
-                console.error(error);
-                return;
-            }
-
-            setMembers(data);
-
-            // user role
-            const me = data.find((m) => m.user_id === user?.id);
-            setCanManage(me?.role === "owner" || me?.role === "admin");
-        };
-
-        fetchMembers();
-    }, [serverId]);
+    const members =
+        (data ?? []) as { user_id: string; role: string; joined_at: string }[];
 
     return (
         <ul className="grid gap-3">
@@ -57,7 +39,8 @@ export default function MembersList({ serverId }: MembersListProps) {
                 <li className="text-sm text-muted-foreground">No members yet.</li>
             ) : (
                 members.map((m) => {
-                    const showRemove = canManage && m.user_id !== currentUserId;
+                    // show Remove only for managers and not for yourself
+                    const showRemove = Boolean(canManage && currentUserId && m.user_id !== currentUserId);
 
                     return (
                         <li
@@ -66,10 +49,7 @@ export default function MembersList({ serverId }: MembersListProps) {
                         >
                             {/* left: user info */}
                             <div className="min-w-0">
-                                <div
-                                    className="truncate font-mono text-xs"
-                                    title={m.user_id}
-                                >
+                                <div className="truncate font-mono text-xs" title={m.user_id}>
                                     {m.user_id}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
