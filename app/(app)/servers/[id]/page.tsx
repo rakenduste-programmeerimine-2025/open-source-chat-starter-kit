@@ -43,7 +43,7 @@ export default async function ServerViewPage({
 
 
     return (
-        <main className="mx-auto max-w-6xl p-6 space-y-6">
+        <main className="w-full p-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px,1fr]">
                 {/* LEFT SIDEBAR */}
                 <aside className="space-y-6">
@@ -65,8 +65,7 @@ export default async function ServerViewPage({
                             <div>
                                 <h1 className="text-lg font-semibold">{data.name}</h1>
                                 <p className="text-xs text-muted-foreground">
-                                    Created:{" "}
-                                    {new Date(data.created_at ?? Date.now()).toLocaleString()}
+                                    Created: {new Date(data.created_at ?? Date.now()).toLocaleString()}
                                 </p>
                             </div>
                         </header>
@@ -87,13 +86,13 @@ export default async function ServerViewPage({
                         </div>
                     </section>
 
-                    {/* Add member form */}
+                    {/* Add member */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Invite member</h2>
                         <AddMemberForm serverId={data.id} />
                     </section>
 
-                    {/* Members list */}
+                    {/* Members */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Members</h2>
                         <MembersList serverId={data.id} />
@@ -101,8 +100,8 @@ export default async function ServerViewPage({
                 </aside>
 
                 {/* RIGHT: CHAT COLUMN */}
-                <section className="flex min-h-[calc(100vh-140px)] flex-col rounded-xl border">
-                    {/* messages list */}
+                <section className="flex min-h-[calc(100vh-120px)] flex-col rounded-xl border">
+                    {/* history (scroll area) */}
                     <div className="min-h-0 flex-1 overflow-y-auto p-4">
                         <MessagesPanel
                             serverId={data.id}
@@ -110,7 +109,7 @@ export default async function ServerViewPage({
                         />
                     </div>
 
-                    {/* message input */}
+                    {/* input */}
                     <div className="border-t p-4">
                         <div className="mx-auto max-w-2xl">
                             <PostMessageForm serverId={data.id} />
@@ -120,6 +119,5 @@ export default async function ServerViewPage({
             </div>
         </main>
     );
-
 
 }
