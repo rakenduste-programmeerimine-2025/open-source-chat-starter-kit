@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createRSCClient } from "@/lib/supabase/server-rsc";
 import AddMemberForm from "./ui/add-member-form";
 import MembersList from "./ui/members-list";
 import MessagesList from "./ui/messages-list";
@@ -10,13 +10,12 @@ export default async function ServerViewPage({
 }: {
     params: { id: string };
 }) {
-    const supabase = createClient();
+    const supabase = createRSCClient();
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) redirect("/auth/login");
 
     const serverId = params.id;
 
-    // Получаем сервер и проверяем, что пользователь является участником
     const { data, error } = await supabase
         .from("servers")
         .select("*")
@@ -26,7 +25,6 @@ export default async function ServerViewPage({
     if (error) throw new Error(error.message);
     if (!data) notFound();
 
-    // Проверяем, что пользователь участник этого сервера
     const { data: memberRow } = await supabase
         .from("server_members")
         .select("role")
