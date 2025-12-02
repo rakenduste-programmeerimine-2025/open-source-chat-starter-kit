@@ -21,19 +21,21 @@ export default function MessagesPanel({
     const [items, setItems] = useState<Msg[]>(
         [...initialItems].sort(
             (a, b) =>
-                new Date(a.sent_on || 0).getTime() - new Date(b.sent_on || 0).getTime()
+                new Date(a.sent_on || 0).getTime() -
+                new Date(b.sent_on || 0).getTime()
         )
     );
+    const [loadingMore, setLoadingMore] = useState(false);
     const listRef = useRef<HTMLDivElement>(null);
 
-
+    // scroll to bottom on mount
     useEffect(() => {
         listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
     }, []);
 
+    // realtime: append new messages (and scroll to bottom)
     useEffect(() => {
         const supabase = createBrowserSupabaseClient();
-
         const channel = supabase
             .channel(`messages:${serverId}`)
             .on(
@@ -59,14 +61,54 @@ export default function MessagesPanel({
                 }
             )
             .subscribe();
-
         return () => {
             supabase.removeChannel(channel);
         };
     }, [serverId]);
 
+    async function loadOlder() {
+        if (loadingMore || items.length === 0) return;
+        setLoadingMore(true);
+        try {
+            const oldest = items[0];
+            const beforeISO = oldest.sent_on ?? new Date().toISOString();
+            const res = await fetch(
+                `/api/servers/${serverId}/messages?limit=10&before=${encodeURIComponent(
+                    beforeISO
+                )}`
+            );
+            const json = (await res.json()) as { items: Msg[]; error?: string };
+            if (!res.ok) throw new Error(json.error || "Failed to load older messages");
+
+            setItems((prev) => {
+                const next = [...json.items, ...prev];
+                next.sort(
+                    (a, b) =>
+                        new Date(a.sent_on || 0).getTime() -
+                        new Date(b.sent_on || 0).getTime()
+                );
+                return next;
+            });
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoadingMore(false);
+        }
+    }
+
     return (
         <div className="flex h-full min-h-0 flex-col">
+            {/* load older */}
+            <div className="mb-3 flex justify-center">
+                <button
+                    onClick={loadOlder}
+                    disabled={loadingMore}
+                    className="rounded-md border px-3 py-1 text-sm hover:bg-muted disabled:opacity-50"
+                >
+                    {loadingMore ? "Loading…" : "Load older"}
+                </button>
+            </div>
+
             <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-2xl space-y-3 p-1">
                     {items.map((m) => (
