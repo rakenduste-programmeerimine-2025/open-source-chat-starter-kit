@@ -41,7 +41,6 @@ export default async function ServerViewPage({
 
     const initialItems = (initialDesc ?? []).reverse();
 
-    const showHistory = (totalCount ?? (initialItems?.length ?? 0)) >= 20;
 
 
     return (
