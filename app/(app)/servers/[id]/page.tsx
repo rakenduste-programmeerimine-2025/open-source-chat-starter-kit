@@ -43,12 +43,11 @@ export default async function ServerViewPage({
 
 
     return (
-        <main className="flex min-h-screen w-full max-w-none p-4 md:p-6">
-            {/* two-column responsive layout: left = info, right = chat */}
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 md:grid-cols-[340px,1fr]">
+        <main className="mx-auto max-w-6xl p-6 space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px,1fr]">
                 {/* LEFT SIDEBAR */}
                 <aside className="space-y-6">
-                    {/* server info */}
+                    {/* Server info */}
                     <section className="rounded-xl border p-4">
                         <header className="mb-3 flex items-center gap-3">
                             {data.image_url ? (
@@ -59,7 +58,7 @@ export default async function ServerViewPage({
                                     className="h-12 w-12 rounded-lg border object-cover"
                                 />
                             ) : (
-                                <div className="flex h-12 w-12 items-center justify-center rounded-lg border text-sm">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg border text-sm font-semibold">
                                     {data.name.slice(0, 2).toUpperCase()}
                                 </div>
                             )}
@@ -67,71 +66,56 @@ export default async function ServerViewPage({
                                 <h1 className="text-lg font-semibold">{data.name}</h1>
                                 <p className="text-xs text-muted-foreground">
                                     Created:{" "}
-                                    {data.created_at
-                                        ? new Date(data.created_at).toLocaleString()
-                                        : "-"}
+                                    {new Date(data.created_at ?? Date.now()).toLocaleString()}
                                 </p>
                             </div>
                         </header>
 
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex gap-3">
                             <a
-                                className="text-sm underline underline-offset-2 hover:text-blue-600"
                                 href={`/servers/${data.id}/edit`}
+                                className="text-sm underline underline-offset-2 hover:text-primary"
                             >
                                 Edit
                             </a>
                             <a
-                                className="text-sm underline underline-offset-2 hover:text-blue-600"
-                                href={`/servers`}
+                                href="/servers"
+                                className="text-sm underline underline-offset-2 hover:text-primary"
                             >
                                 Back
                             </a>
                         </div>
                     </section>
 
-                    {/* invite by user id */}
+                    {/* Add member form */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Invite member</h2>
                         <AddMemberForm serverId={data.id} />
                     </section>
 
-                    {/* members list */}
+                    {/* Members list */}
                     <section className="rounded-xl border p-4">
                         <h2 className="mb-3 text-sm font-semibold">Members</h2>
                         <MembersList serverId={data.id} />
                     </section>
                 </aside>
 
-                {/* RIGHT COLUMN: chat */}
-                <section className="flex min-h-0 flex-col rounded-xl border">
-                    <div className="border-b p-4">
-                        <h2 className="text-lg font-semibold">Chat</h2>
-                    </div>
-
-                    {/* scrollable messages area */}
+                {/* RIGHT: CHAT COLUMN */}
+                <section className="flex min-h-[calc(100vh-140px)] flex-col rounded-xl border">
+                    {/* messages list */}
                     <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                        <div className="mx-auto max-w-2xl">
-                            <MessagesList serverId={data.id} />
-                        </div>
+                        <MessagesPanel
+                            serverId={data.id}
+                            initialItems={(initialItems ?? []).reverse()}
+                        />
                     </div>
 
-                    {/*  message input */}
-                    <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                        {showHistory ? (
-                            <MessagesPanel
-                                serverId={data.id}
-                                initialItems={(initialItems ?? []).reverse()}
-                            />
-                        ) : null}
-                    </div>
-
+                    {/* message input */}
                     <div className="border-t p-4">
                         <div className="mx-auto max-w-2xl">
                             <PostMessageForm serverId={data.id} />
                         </div>
                     </div>
-
                 </section>
             </div>
         </main>
