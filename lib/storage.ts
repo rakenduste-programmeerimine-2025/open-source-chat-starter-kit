@@ -1,9 +1,9 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/server";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export async function uploadAvatar(file: File, userId: string) {
-    const supabase = createClient();
+    const supabase = createBrowserSupabaseClient();
 
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${userId}/${Date.now()}.${ext}`;
