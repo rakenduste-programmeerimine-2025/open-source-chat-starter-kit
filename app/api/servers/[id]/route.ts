@@ -7,6 +7,7 @@ export async function GET(
 ) {
   const supabase = createClient();
 
+
   const { data, error } = await supabase
     .from("servers")
     .select("id, name, image_url, created_by, created_at")
