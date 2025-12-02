@@ -11,6 +11,12 @@ type Msg = {
     sent_on: string | null;
 };
 
+function sortAsc(a: Msg, b: Msg) {
+    return (
+        new Date(a.sent_on || 0).getTime() - new Date(b.sent_on || 0).getTime()
+    );
+}
+
 export default function MessagesPanel({
     serverId,
     initialItems,
@@ -18,49 +24,57 @@ export default function MessagesPanel({
     serverId: string;
     initialItems: Msg[];
 }) {
+    // держим сообщения по возрастанию времени
     const [items, setItems] = useState<Msg[]>(
-        [...initialItems].sort(
-            (a, b) =>
-                new Date(a.sent_on || 0).getTime() -
-                new Date(b.sent_on || 0).getTime()
-        )
+        [...initialItems].sort(sortAsc)
     );
     const [loadingMore, setLoadingMore] = useState(false);
     const listRef = useRef<HTMLDivElement>(null);
 
-    // scroll to bottom on mount
+    // автоскролл к низу при первом рендере
     useEffect(() => {
         listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
     }, []);
 
-    // realtime: append new messages (and scroll to bottom)
+    // realtime INSERT
     useEffect(() => {
         const supabase = createBrowserSupabaseClient();
+
         const channel = supabase
             .channel(`messages:${serverId}`)
             .on(
                 "postgres_changes",
-                { event: "INSERT", schema: "public", table: "messages", filter: `server_id=eq.${serverId}` },
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter: `server_id=eq.${serverId}`,
+                },
                 (payload) => {
+                    console.log("[RT] INSERT payload:", payload); // диагностика
                     const m = payload.new as unknown as Msg;
+
                     setItems((prev) => {
-                        const next = [...prev, m];
-                        next.sort(
-                            (a, b) =>
-                                new Date(a.sent_on || 0).getTime() -
-                                new Date(b.sent_on || 0).getTime()
-                        );
+                        // защита от дублей
+                        const exists = prev.some((x) => x.id === m.id);
+                        const next = exists ? prev : [...prev, m];
+                        next.sort(sortAsc);
                         return next;
                     });
-                    queueMicrotask(() =>
+
+                    // прокрутка вниз
+                    queueMicrotask(() => {
                         listRef.current?.scrollTo({
                             top: listRef.current.scrollHeight,
                             behavior: "smooth",
-                        })
-                    );
+                        });
+                    });
                 }
             )
-            .subscribe();
+            .subscribe((status) => {
+                console.log("[RT] channel status:", status); // ожидаем "SUBSCRIBED"
+            });
+
         return () => {
             supabase.removeChannel(channel);
         };
@@ -72,6 +86,7 @@ export default function MessagesPanel({
         try {
             const oldest = items[0];
             const beforeISO = oldest.sent_on ?? new Date().toISOString();
+
             const res = await fetch(
                 `/api/servers/${serverId}/messages?limit=10&before=${encodeURIComponent(
                     beforeISO
@@ -81,16 +96,14 @@ export default function MessagesPanel({
             if (!res.ok) throw new Error(json.error || "Failed to load older messages");
 
             setItems((prev) => {
-                const next = [...json.items, ...prev];
-                next.sort(
-                    (a, b) =>
-                        new Date(a.sent_on || 0).getTime() -
-                        new Date(b.sent_on || 0).getTime()
-                );
-                return next;
+                // объединяем и удаляем дубли
+                const merged = [...json.items, ...prev];
+                const dedup = Array.from(new Map(merged.map((m) => [m.id, m])).values());
+                dedup.sort(sortAsc);
+                return dedup;
             });
         } catch (e) {
-            console.error(e);
+            console.error("[messages] loadOlder error:", e);
         } finally {
             setLoadingMore(false);
         }
@@ -98,7 +111,7 @@ export default function MessagesPanel({
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            {/* load older */}
+            {/* Load older */}
             <div className="mb-3 flex justify-center">
                 <button
                     onClick={loadOlder}
@@ -109,6 +122,7 @@ export default function MessagesPanel({
                 </button>
             </div>
 
+            {/* scrollable list */}
             <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-2xl space-y-3 p-1">
                     {items.map((m) => (
@@ -124,7 +138,11 @@ export default function MessagesPanel({
                                     {m.sent_on ? new Date(m.sent_on).toLocaleString() : "-"}
                                 </span>
                             </div>
-                            {m.message && <p className="mt-1 leading-relaxed">{m.message}</p>}
+                            {m.message && (
+                                <p className="mt-1 whitespace-pre-wrap leading-relaxed">
+                                    {m.message}
+                                </p>
+                            )}
                         </div>
                     ))}
                 </div>
