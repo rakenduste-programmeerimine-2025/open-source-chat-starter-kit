@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 type Msg = {
     id: string;
@@ -34,7 +34,7 @@ export default function MessagesPanel({
     }, []);
 
     useEffect(() => {
-        const supabase = createClient();
+        const supabase = createBrowserSupabaseClient();
         const channel = supabase
             .channel(`messages:${serverId}`)
             .on(
