@@ -6,7 +6,7 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     const url = new URL(req.url);
-    const limit = Number(url.searchParams.get("limit") ?? "30");
+    const limit = Number(url.searchParams.get("limit") ?? "10");
     const before = url.searchParams.get("before"); // ISO timestamp
 
     const supabase = createClient();
@@ -25,5 +25,6 @@ export async function GET(
     const { data, error } = await q;
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-    return NextResponse.json({ items: data ?? [] });
+    const items = (data ?? []).reverse();
+    return NextResponse.json({ items });
 }
