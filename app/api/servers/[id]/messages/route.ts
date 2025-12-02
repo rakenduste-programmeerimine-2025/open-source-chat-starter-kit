@@ -7,24 +7,31 @@ export async function GET(
 ) {
     const url = new URL(req.url);
     const limit = Number(url.searchParams.get("limit") ?? "10");
-    const before = url.searchParams.get("before"); // ISO timestamp
+    const before = url.searchParams.get("before"); // ISO timestamp: older than
+    const after = url.searchParams.get("after");   // ISO timestamp: newer than
 
     const supabase = createClient();
 
     let q = supabase
         .from("messages")
         .select("id, server_id, sender_id, message, sent_on")
-        .eq("server_id", params.id)
-        .order("sent_on", { ascending: false })
-        .limit(limit);
+        .eq("server_id", params.id);
 
-    if (before) {
+    if (after) {
+        // fetch newer than 'after'
+        q = q.gt("sent_on", after).order("sent_on", { ascending: true }).limit(limit);
+    } else {
+        // default: last N (freshest first), then reverse on output
+        q = q.order("sent_on", { ascending: false }).limit(limit);
+    }
+
+    if (before && !after) {
         q = q.lt("sent_on", before);
     }
 
     const { data, error } = await q;
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-    const items = (data ?? []).reverse();
+    const items = after ? (data ?? []) : (data ?? []).reverse();
     return NextResponse.json({ items });
 }
