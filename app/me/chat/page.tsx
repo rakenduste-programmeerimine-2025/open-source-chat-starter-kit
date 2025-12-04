@@ -120,15 +120,19 @@ export default function Page() {
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             {chatList.map((message, key)=>(
                 <div key={key}>
-                  sent by {message.username} at {message.sent_on}
-                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "3%", marginRight: "3%"}}><p style={{marginLeft: "3%", marginRight: "3%"}}>{message.message}</p></div>
+                  <div style={{marginLeft: "3%"}}>sent by {message.username} at {message.sent_on}</div>
+                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%"}}><p style={{marginLeft: "2%", marginRight: "2%"}}>{message.message}</p></div>
                 </div>
             ))}
           </div>
           <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
           <div style={scrolldivS}>
-            <div>server list</div>
-            <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "3%", marginRight: "3%"}} >
+            <div>
+              <input type="text" style={{marginLeft: "2%", marginRight: "0%", width: "86%", borderRadius: "8px"}} placeholder="Your message here"/>
+              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}}>[ ⏎ ]</button>
+            </div>
+            <div style={{marginLeft: "3%"}}>server list:</div>
+            <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
               <option value={serverData[0].id}>Server selection</option>
               {serverList.map((server, key)=>(
                 <option key={key} value={server.id}>{server.name}</option>
