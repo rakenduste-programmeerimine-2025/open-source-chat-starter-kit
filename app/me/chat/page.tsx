@@ -69,10 +69,7 @@ export default function Page() {
     setInvChatList(chatList.toReversed())
     console.log(serverData, serverList, chatList)
   }, [serverData && chatList])
-  
-  // useffect trigger for reloading the page
 
-  
   
   function handleServerSwitch() {
     setServerID((document.getElementById("serverSelect") as unknown as HTMLSelectElement)!.value)
@@ -100,11 +97,14 @@ export default function Page() {
       })
         .then((response) => response.json())
         .then((responseJson) => {
+          (document.getElementById("yourMSG") as unknown as HTMLInputElement).value = ""
           console.log(responseJson)
           setUpdateCounter(updateCounter + 1)
         })
     }
   }
+
+  // ------------------------------------ < RENDERING SHENANIGANS > ------------------------------------
 
   const window = {
     display: "flex",
@@ -155,8 +155,14 @@ export default function Page() {
             <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
               {invChatList.map((message, key)=>(
                 <div key={key}>
-                  <div style={{marginLeft: "3%"}}>sent by {message.username} at {message.sent_on}</div>
-                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%", marginBottom: "1.5%"}}><p style={{marginLeft: "2%", marginRight: "2%"}}>{message.message}</p></div>
+                  <div style={{marginLeft: "3%"}}>
+                    sent by {message.username} at {message.sent_on}
+                  </div>
+                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%", marginBottom: "1.5%"}}>
+                    <p style={{marginLeft: "2%", marginRight: "2%"}}>
+                      {message.message}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -164,8 +170,15 @@ export default function Page() {
           <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
           <div style={scrolldivS}>
             <div>
-              <input type="text" id="yourMSG" style={{marginLeft: "2%", marginRight: "0%", width: "86%", borderRadius: "8px"}} placeholder="Your message here"/>
-              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>handleEnterPress()}>[ ⏎ ]</button>
+              <input type="text" id="yourMSG" style={{
+                marginLeft: "2%",
+                marginRight: "0%",
+                width: "86%",
+                borderRadius: "8px"
+              }} placeholder="Your message here" defaultValue={""}/>
+              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>handleEnterPress()}>
+                [ ⏎ ]
+              </button>
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
             <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
