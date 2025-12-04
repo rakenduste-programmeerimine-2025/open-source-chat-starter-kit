@@ -26,14 +26,16 @@ export default function Page() {
   const [chatList, setChatList] = useState([[{}]]) as unknown as Array<Array<Message>>
   const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
+  const [serverID, setServerID] = useState("f291a9a9-10aa-4057-acdc-7e036d7111ac") //hardcoded lmfaogffs
+
   useEffect(() => {
-    fetch('http://localhost:3000/api/messages')
+    fetch('http://localhost:3000/api/messages/' + serverID)
       .then(response => response.json())
       .then(response => setChatList(response.data))
   }, [])
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/servers/f291a9a9-10aa-4057-acdc-7e036d7111ac') //hardcoded lmfaogffs
+    fetch('http://localhost:3000/api/servers/' + serverID)
       .then(response => response.json())
       .then(response => setServerData(response))
   }, [])
