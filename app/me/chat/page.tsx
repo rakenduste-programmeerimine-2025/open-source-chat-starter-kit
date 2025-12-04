@@ -36,11 +36,14 @@ export default function Page() {
   }
 
   const [chatList, setChatList] = useState([[{}]]) as unknown as Array<Messages>
+  const [invChatList, setInvChatList] = useState([[{}]]) as unknown as Array<Messages>
   const [serverList, setServerList] = useState([[{}]]) as unknown as Array<ServList>
   const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
   //const [serverID, setServerID] = useState("f291a9a9-10aa-4057-acdc-7e036d7111ac")
   const [serverID, setServerID] = useState("36d2abfa-2d13-48f9-b701-78e355c89f21")
+
+  const [currentUser, setCurrentUser] = useState("11a27520-5222-4005-951d-61ffd7119cd4") // hardcoded user id LMFATHO
 
   const [updateCounter, setUpdateCounter] = useState(0)
 
@@ -59,14 +62,49 @@ export default function Page() {
       .then(response => response.json())
       //@ts-expect-error because we can in fact call the function
       .then(response => setServerData(response))
-  }, [serverID])
+  }, [serverID, updateCounter])
 
   useEffect(() => {
-    setUpdateCounter(updateCounter + 1)
-    console.warn(updateCounter)
+    //@ts-expect-error because we can in fact call the function
+    setInvChatList(chatList.toReversed())
     console.log(serverData, serverList, chatList)
   }, [serverData && chatList])
   
+  // useffect trigger for reloading the page
+
+  
+  
+  function handleServerSwitch() {
+    setServerID((document.getElementById("serverSelect") as unknown as HTMLSelectElement)!.value)
+  }
+
+  // sends the message
+  function handleEnterPress() {
+    console.warn("yo in fact something is pressed")
+    const messageToSend = (document.getElementById("yourMSG") as unknown as HTMLInputElement)!.value
+    console.log(messageToSend)
+    if(messageToSend == null || messageToSend == "" || messageToSend == " ") {
+      console.warn("do not send empty messages!")
+    }
+    else {
+      fetch('http://localhost:3000/api/messages/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "sender_id": currentUser,
+          "server_id": serverID,
+          "message": messageToSend
+        })
+      })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log(responseJson)
+          setUpdateCounter(updateCounter + 1)
+        })
+    }
+  }
 
   const window = {
     display: "flex",
@@ -105,10 +143,6 @@ export default function Page() {
     backgroundColor: "gray",
     height: "20vh",
   } as CSSProperties
-  
-  function handleServerSwitch() {
-    setServerID((document.getElementById("serverSelect") as unknown as HTMLSelectElement)!.value)
-  }
 
   return (
     <>
@@ -118,18 +152,20 @@ export default function Page() {
             this is a chat box
             <div>server name {serverData[0].name}</div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
-            {chatList.map((message, key)=>(
+            <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
+              {invChatList.map((message, key)=>(
                 <div key={key}>
                   <div style={{marginLeft: "3%"}}>sent by {message.username} at {message.sent_on}</div>
-                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%"}}><p style={{marginLeft: "2%", marginRight: "2%"}}>{message.message}</p></div>
+                  <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%", marginBottom: "1.5%"}}><p style={{marginLeft: "2%", marginRight: "2%"}}>{message.message}</p></div>
                 </div>
-            ))}
+              ))}
+            </div>
           </div>
           <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
           <div style={scrolldivS}>
             <div>
-              <input type="text" style={{marginLeft: "2%", marginRight: "0%", width: "86%", borderRadius: "8px"}} placeholder="Your message here"/>
-              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}}>[ ⏎ ]</button>
+              <input type="text" id="yourMSG" style={{marginLeft: "2%", marginRight: "0%", width: "86%", borderRadius: "8px"}} placeholder="Your message here"/>
+              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>handleEnterPress()}>[ ⏎ ]</button>
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
             <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
