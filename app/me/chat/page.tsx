@@ -117,7 +117,7 @@ export default function Page() {
     justifyContent: "space-around",
     flexDirection: "column",
     backgroundColor: "gray",
-    width: "60vw",
+    width: "62.5vw",
   } as CSSProperties
 
   const sidedivR = {
@@ -149,14 +149,14 @@ export default function Page() {
       <div style={window}>
         <div style={sidedivL}>
           <div style={scrolldivB}>
-            this is a chat box
-            <div>server name {serverData[0].name}</div>
+            <div style={{fontSize: "28px"}}>{serverData[0].name}</div>
+            <div>by {serverData[0].created_by}</div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
               {invChatList.map((message, key)=>(
                 <div key={key}>
                   <div style={{marginLeft: "3%"}}>
-                    sent by {message.username} at {message.sent_on}
+                    {message.username}
                   </div>
                   <div style={{backgroundColor: "darkgray", borderRadius: "8px", marginLeft: "2%", marginRight: "2%", marginBottom: "1.5%"}}>
                     <p style={{marginLeft: "2%", marginRight: "2%"}}>
@@ -181,12 +181,20 @@ export default function Page() {
               </button>
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
-            <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
+            {/* <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
               <option value={serverData[0].id}>Server selection</option>
               {serverList.map((server, key)=>(
                 <option key={key} value={server.id}>{server.name}</option>
               ))}
-            </select>
+            </select> */}
+            <hr />
+            <div style={{display: "flex", flexDirection: "row", overflowX: "auto"}}>
+              {serverList.map((server, key)=>(
+                <div key={key} style={{marginLeft: "8px", marginRight: "8px", marginBottom: "1%"}}>
+                  <button style={{backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>setServerID(server.id)}>{server.name}</button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div style={sidedivR}>
