@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   const users = (data?.users || []).map(user => ({
     id: user.id,
     email: user.email,
-    username: user.user_metadata?.username || null, // or raw_user_meta_data if available
+    username: user.user_metadata?.username || null, 
   }))
 
   return new Response(JSON.stringify(users), {

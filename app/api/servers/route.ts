@@ -8,6 +8,7 @@ const supabase = createClient(
 
 export async function GET(request: NextRequest) {
   const { data, error } = await supabase.from("servers").select()
+  const users = await getUsers()
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -16,12 +17,19 @@ export async function GET(request: NextRequest) {
     })
   }
 
+  for (let i = 0; i < data?.length; i++) {
+    data[i].created_by_username = users.find(
+      user => user.id === data[i].created_by,
+    ).username
+  }
+
   // console.log(data)
   const servers = (data || []).map(server => ({
     id: server.id,
     name: server.name,
     image_url: server.image_url,
     created_by: server.created_by,
+    created_by_username: server.created_by_username,
     created_at: server.created_at,
   }))
 
@@ -86,4 +94,13 @@ export async function DELETE(request: NextRequest) {
       { status: 400, headers: { "Content-Type": "application/json" } },
     )
   }
+}
+
+async function getUsers() {
+  const { data, error } = await supabase.auth.admin.listUsers()
+  const users = (data?.users || []).map(user => ({
+    id: user.id,
+    username: user.user_metadata?.username || null,
+  }))
+  return users
 }
