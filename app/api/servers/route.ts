@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     created_by: server.created_by,
     created_by_username: server.created_by_username,
     created_at: server.created_at,
+    date : convertTimestamp(server.created_at)
   }))
 
   return new Response(JSON.stringify(servers), {
@@ -103,4 +104,16 @@ async function getUsers() {
     username: user.user_metadata?.username || null,
   }))
   return users
+}
+
+function convertTimestamp(timestamp) {
+  const date = new Date(timestamp)
+  const returnDate = {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+    hours: date.getHours(),
+    minutes: date.getMinutes(),
+  }
+  return returnDate
 }

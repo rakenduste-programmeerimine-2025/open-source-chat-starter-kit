@@ -26,6 +26,8 @@ export async function GET(request: NextRequest, { params }) {
     data[i].username = users.find(
       user => user.id === data[i].sender_id,
     ).username
+
+    data[i].date = convertTimestamp(data[i].sent_on)
   }
     return new Response(JSON.stringify({data}), {
       status: 200,
@@ -42,4 +44,16 @@ async function getUsers() {
     username: user.user_metadata?.username || null, // or raw_user_meta_data if available
   }))
   return users
+}
+
+function convertTimestamp(timestamp) {
+  const date = new Date(timestamp)
+  const returnDate = {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+    hours: date.getHours(),
+    minutes: date.getMinutes(),
+  }
+  return returnDate
 }
