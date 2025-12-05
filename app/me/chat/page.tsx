@@ -4,6 +4,69 @@ import { CSSProperties, useEffect, useState } from "react";
 
 export default function Page() {
 
+  type UserInfo = {
+    id: string,
+    aud: string,
+    role: string,
+    email: string,
+    email_confirmed_at: string,
+    phone: string,
+    confirmed_at: string,
+    last_sign_in_at: string,
+    app_metadata: {
+        provider: string,
+        providers: [
+          string
+        ]
+    },
+    user_metadata: {
+        email: string,
+        email_verified: true,
+        phone_verified: false,
+        sub: string,
+        username: string
+    },
+    identities: null,
+    created_at: string,
+    updated_at: string,
+    is_anonymous: false,
+    email_change_sent_at_date: {
+        day: 0,
+        month: 0,
+        year: 0,
+        hours: 0,
+        minutes: 0
+    },
+    confirmed_at_date: {
+        day: 0,
+        month: 0,
+        year: 0,
+        hours: 0,
+        minutes: 0
+    },
+    last_sign_in_at_date: {
+        day: 0,
+        month: 0,
+        year: 0,
+        hours: 0,
+        minutes: 0
+    },
+    created_at_date: {
+        day: 0,
+        month: 0,
+        year: 0,
+        hours: 0,
+        minutes: 0
+    },
+    updated_at_date: {
+        day: 0,
+        month: 0,
+        year: 0,
+        hours: 0,
+        minutes: 0
+    }
+  }
+  
   type Messages = [
     message:{
       deleted_at: null
@@ -68,18 +131,23 @@ export default function Page() {
   const [serverList, setServerList] = useState([[{}]]) as unknown as Array<ServList>
   const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
-  const [serverID, setServerID] = useState("e6706379-a574-47bd-92f3-6c7669b24e6c")
-  //const [serverID, setServerID] = useState("36d2abfa-2d13-48f9-b701-78e355c89f21")
+  //const [serverID, setServerID] = useState("e6706379-a574-47bd-92f3-6c7669b24e6c")
+  const [serverID, setServerID] = useState("36d2abfa-2d13-48f9-b701-78e355c89f21")
 
   const [currentUser, setCurrentUser] = useState("11a27520-5222-4005-951d-61ffd7119cd4") // hardcoded user id LMFATHO
+  const [userInfo, setUserInfo] = useState<UserInfo>()
 
   const [updateCounter, setUpdateCounter] = useState(0)
 
   useEffect(() => {
+    fetch('http://localhost:3000/api/users/' + currentUser)
+      .then(response => response.json())
+      .then(response => setUserInfo(response))
+
     fetch('http://localhost:3000/api/messages/' + serverID)
       .then(response => response.json())
       //@ts-expect-error because we can in fact call the function
-      .then(response => setChatList(response.data)) 
+      .then(response => setChatList(response.data))
 
     fetch('http://localhost:3000/api/servers')
       .then(response => response.json())
@@ -95,7 +163,7 @@ export default function Page() {
   useEffect(() => {
     //@ts-expect-error because we can in fact call the function
     setInvChatList(chatList.toReversed())
-    console.log(serverData, serverList, chatList)
+    console.log(serverData, serverList, chatList, userInfo)
   }, [serverData && chatList])
 
 
@@ -214,7 +282,7 @@ export default function Page() {
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
             <hr />
-            <div style={{display: "flex", flexDirection: "row", overflowX: "auto"}}>
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly", overflowX: "auto"}}>
               {serverList.map((server, key)=>(
                 <div key={key} style={{marginLeft: "8px", marginRight: "8px", marginBottom: "2%"}}>
                   <button style={{backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>setServerID(server.id)}>{server.name}</button>
@@ -226,8 +294,22 @@ export default function Page() {
         <div style={sidedivR}>
           <div style={scrolldivS}>
             <div>
-              <div>About yourself:</div>
-              <div>a</div>
+              <div style={{marginLeft: "3%"}}>About yourself:</div>
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                margin: "3%",
+                backgroundColor: "rgb(60, 60, 60)",
+                borderRadius: "8px"
+              }}>
+                <div style={{margin: "3%"}}>
+                  <div style={{fontSize:"25px"}}>{userInfo?.user_metadata.username}</div>
+                  <hr style={{borderColor: "white"}} />
+                  <div>{userInfo?.user_metadata.email}</div>
+                  <div>joined us at: {userInfo?.created_at_date.day}.{userInfo?.created_at_date.month}.{userInfo?.created_at_date.year}</div>
+                </div>
+              </div>
             </div>
           </div>
           <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
