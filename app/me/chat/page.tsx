@@ -169,15 +169,16 @@ export default function Page() {
           </div>
           <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
           <div style={scrolldivS}>
-            <div>
-              <input type="text" id="yourMSG" style={{
+            <div style={{display: "flex", justifyContent: "space-around"}}>
+              <textarea id="yourMSG" rows={2} maxLength={512} autoFocus style={{
                 marginLeft: "2%",
-                marginRight: "0%",
+                marginRight: "0px",
                 width: "86%",
-                borderRadius: "8px"
-              }} placeholder="Your message here" defaultValue={""}/>
-              <button style={{marginLeft: "4%", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>handleEnterPress()}>
-                [ ⏎ ]
+                borderRadius: "8px",
+                resize: "inherit",
+              }} placeholder="Your message here . . ." defaultValue={""}/>
+              <button style={{marginLeft: "10px", marginRight: "2%", backgroundColor: "rgb(60, 60, 60)", borderRadius: "8px", width: "12%"}} onClick={()=>handleEnterPress()}>
+                ⏎
               </button>
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
@@ -190,7 +191,7 @@ export default function Page() {
             <hr />
             <div style={{display: "flex", flexDirection: "row", overflowX: "auto"}}>
               {serverList.map((server, key)=>(
-                <div key={key} style={{marginLeft: "8px", marginRight: "8px", marginBottom: "1%"}}>
+                <div key={key} style={{marginLeft: "8px", marginRight: "8px", marginBottom: "2%"}}>
                   <button style={{backgroundColor: "rgb(60, 60, 60)"}} onClick={()=>setServerID(server.id)}>{server.name}</button>
                 </div>
               ))}
