@@ -32,6 +32,7 @@ export default function Page() {
     name: string
     image_url: null
     created_by: string
+    created_by_username: string
     created_at: string
   }
 
@@ -70,10 +71,6 @@ export default function Page() {
     console.log(serverData, serverList, chatList)
   }, [serverData && chatList])
 
-  
-  function handleServerSwitch() {
-    setServerID((document.getElementById("serverSelect") as unknown as HTMLSelectElement)!.value)
-  }
 
   // sends the message
   function handleEnterPress() {
@@ -149,8 +146,10 @@ export default function Page() {
       <div style={window}>
         <div style={sidedivL}>
           <div style={scrolldivB}>
-            <div style={{fontSize: "28px"}}>{serverData[0].name}</div>
-            <div>by {serverData[0].created_by}</div>
+            <div style={{marginLeft: "2vw"}}>
+              <div style={{fontSize: "28px"}}>{serverData[0].name}</div>
+              <div>by {serverData[0].created_by_username}</div>
+            </div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
               {invChatList.map((message, key)=>(
@@ -182,12 +181,6 @@ export default function Page() {
               </button>
             </div>
             <div style={{marginLeft: "3%"}}>server list:</div>
-            {/* <select name="serverSelect" id="serverSelect" onChange={() => handleServerSwitch()} style={{marginLeft: "2%", marginRight: "2%"}} >
-              <option value={serverData[0].id}>Server selection</option>
-              {serverList.map((server, key)=>(
-                <option key={key} value={server.id}>{server.name}</option>
-              ))}
-            </select> */}
             <hr />
             <div style={{display: "flex", flexDirection: "row", overflowX: "auto"}}>
               {serverList.map((server, key)=>(
