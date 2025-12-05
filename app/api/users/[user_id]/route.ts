@@ -22,7 +22,6 @@ export async function GET(request: NextRequest, { params }) {
   for (let i = 0; i < data.users.length; i++) {
     if (data.users[i].id === UserParam.user_id) {
       user = data.users[i]
-      console.log(data.users[i])
       break
     }
   }
