@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { uploadAvatar } from "@/lib/storage";
+import LogoutButton from "@/components/logout-button";
 
 type Profile = {
     id: string;
@@ -20,8 +21,12 @@ export default function MePage() {
     useEffect(() => {
         (async () => {
             const supabase = createBrowserSupabaseClient();
-            const { data: { user }, error: userErr } = await supabase.auth.getUser();
+            const {
+                data: { user },
+                error: userErr,
+            } = await supabase.auth.getUser();
             if (userErr || !user) {
+                // при желании можно поменять на /auth/sign-in
                 window.location.href = "/auth/login";
                 return;
             }
@@ -88,7 +93,11 @@ export default function MePage() {
 
     return (
         <main className="mx-auto max-w-xl p-6">
-            <h1 className="mb-4 text-2xl font-semibold">My profile</h1>
+            {/* Шапка с кнопкой выхода */}
+            <header className="mb-4 flex items-center justify-between">
+                <h1 className="text-2xl font-semibold">My profile</h1>
+                <LogoutButton />
+            </header>
 
             <div className="rounded-xl border p-4 space-y-4">
                 <div className="flex items-center gap-4">
