@@ -138,9 +138,9 @@ export default function Page() {
   const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
   //const [serverID, setServerID] = useState("e6706379-a574-47bd-92f3-6c7669b24e6c")
-  const [serverID, setServerID] = useState("36d2abfa-2d13-48f9-b701-78e355c89f21")
+  const [serverID, setServerID] = useState("adb99285-e2f9-4d1f-8751-564e503b05f5")
 
-  const [currentUser, setCurrentUser] = useState("11a27520-5222-4005-951d-61ffd7119cd4") // hardcoded user id LMFATHO
+  const [currentUser, setCurrentUser] = useState("a1a93551-b67c-44ac-af29-004b3d798fa6") // hardcoded user id LMFATHO
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   const [today, setToday] = useState<CurrentTime>({day: new Date().getDay(), month: new Date().getMonth() + 1, year: new Date().getFullYear()})
@@ -251,8 +251,8 @@ export default function Page() {
         <div style={sidedivL}>
           <div style={scrolldivB}>
             <div style={{marginLeft: "2vw"}}>
-              <div style={{fontSize: "28px", marginTop: "1%", marginBottom: "-1%"}}>{serverData[0].name}</div>
-              <div style={{marginBottom: "1.5%"}}>by {serverData[0].created_by_username}</div>
+              <div style={{fontSize: "28px", marginTop: "1%", marginBottom: "-1%"}}>{serverData[0]?.name}</div>
+              <div style={{marginBottom: "1.5%"}}>by {serverData[0]?.created_by_username}</div>
             </div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
