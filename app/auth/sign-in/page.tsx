@@ -60,7 +60,7 @@ export default function SignInPage() {
                 <span>·</span>
                 <a className="underline" href="/auth/sign-up">Create account</a>
                 <span>·</span>
-                <a className="underline" href="/auth/login">Use magic link</a>
+                <a className="underline" href="/auth/magic-link">Use magic link</a>
             </div>
         </form>
     );

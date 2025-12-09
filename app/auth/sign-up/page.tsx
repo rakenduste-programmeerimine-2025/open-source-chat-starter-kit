@@ -56,7 +56,7 @@ export default function SignUpPage() {
       <div className="text-sm text-muted-foreground">
         Already have an account?{" "}
         <a className="underline" href="/auth/sign-in">Sign in</a>
-        {" "}· Or <a className="underline" href="/auth/login">use magic link</a>
+        {" "}· Or <a className="underline" href="/auth/magic-link">use magic link</a>
       </div>
     </form>
   );
