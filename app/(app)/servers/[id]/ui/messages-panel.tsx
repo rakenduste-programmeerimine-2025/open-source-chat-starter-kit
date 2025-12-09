@@ -25,54 +25,51 @@ export default function MessagesPanel({
     const [loadingMore, setLoadingMore] = useState(false);
     const listRef = useRef<HTMLDivElement>(null);
 
-    // scroll to bottom on mount
+    const supabaseRef = useRef<ReturnType<typeof createBrowserSupabaseClient> | null>(null);
+
     useEffect(() => {
         listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
     }, []);
 
-    // realtime subscription (INSERT/UPDATE/DELETE)
     useEffect(() => {
-        const supabase = createBrowserSupabaseClient();
+        const supabase = (supabaseRef.current ??= createBrowserSupabaseClient());
 
-        const channel = supabase
-            .channel(`messages:${serverId}`)
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "messages", filter: `server_id=eq.${serverId}` },
-                (payload) => {
-                    // console.log("[RT] change:", payload.eventType, payload);
-                    if (payload.eventType === "INSERT") {
-                        const m = payload.new as unknown as Msg;
-                        setItems((prev) => {
-                            if (prev.some((x) => x.id === m.id)) return prev;
-                            const next = [...prev, m].sort(sortAsc);
-                            return next;
-                        });
-                        queueMicrotask(() =>
-                            listRef.current?.scrollTo({
-                                top: listRef.current.scrollHeight,
-                                behavior: "smooth",
-                            })
-                        );
-                    } else if (payload.eventType === "UPDATE") {
-                        const m = payload.new as unknown as Msg;
-                        setItems((prev) => prev.map((x) => (x.id === m.id ? m : x)).sort(sortAsc));
-                    } else if (payload.eventType === "DELETE") {
-                        const oldRow = payload.old as { id: string };
-                        setItems((prev) => prev.filter((x) => x.id !== oldRow.id));
-                    }
-                }
-            )
-            .subscribe();
+        const channel = supabase.channel(`realtime:messages:${serverId}`, {
+            config: { broadcast: { ack: true } },
+        });
+
+        const onInsert = (payload: { new: Msg }) => {
+            const m = payload.new;
+            setItems((prev) => {
+                if (prev.some((x) => x.id === m.id)) return prev;
+                const next = [...prev, m].sort(sortAsc);
+                return next;
+            });
+            queueMicrotask(() =>
+                listRef.current?.scrollTo({
+                    top: listRef.current.scrollHeight,
+                    behavior: "smooth",
+                })
+            );
+        };
+
+        channel.on(
+            "postgres_changes",
+            { event: "INSERT", schema: "public", table: "messages", filter: `server_id=eq.${serverId}` },
+            onInsert
+        );
+
+        channel.subscribe((status: string) => {
+        });
 
         return () => {
             supabase.removeChannel(channel);
         };
     }, [serverId]);
 
-    // fallback polling for NEWER messages (every 2s)
     useEffect(() => {
         let stopped = false;
+
         async function tick() {
             if (stopped) return;
             const latest = items[items.length - 1]?.sent_on;
@@ -97,11 +94,11 @@ export default function MessagesPanel({
                         );
                     }
                 } catch {
-                    // silent
                 }
             }
             setTimeout(tick, 2000);
         }
+
         const t = setTimeout(tick, 2000);
         return () => {
             clearTimeout(t);
@@ -159,9 +156,7 @@ export default function MessagesPanel({
                                     {m.sent_on ? new Date(m.sent_on).toLocaleString() : "-"}
                                 </span>
                             </div>
-                            {m.message && (
-                                <p className="mt-1 whitespace-pre-wrap leading-relaxed">{m.message}</p>
-                            )}
+                            {m.message && <p className="mt-1 whitespace-pre-wrap leading-relaxed">{m.message}</p>}
                         </div>
                     ))}
                 </div>
