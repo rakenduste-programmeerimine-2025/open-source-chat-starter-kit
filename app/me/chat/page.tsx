@@ -24,7 +24,7 @@ export default function Page() {
         email_verified: true,
         phone_verified: false,
         sub: string,
-        username: string
+        display_name: string
     },
     identities: null,
     created_at: string,
@@ -137,10 +137,9 @@ export default function Page() {
   const [serverList, setServerList] = useState([[{}]]) as unknown as Array<ServList>
   const [serverData, setServerData] = useState([[{}]]) as unknown as Array<Array<ServData>>
 
-  //const [serverID, setServerID] = useState("e6706379-a574-47bd-92f3-6c7669b24e6c")
-  const [serverID, setServerID] = useState("36d2abfa-2d13-48f9-b701-78e355c89f21")
+  const [serverID, setServerID] = useState("")
 
-  const [currentUser, setCurrentUser] = useState("11a27520-5222-4005-951d-61ffd7119cd4") // hardcoded user id LMFATHO
+  const [currentUser, setCurrentUser] = useState("a1a93551-b67c-44ac-af29-004b3d798fa6") // hardcoded user id
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   const [today, setToday] = useState<CurrentTime>({day: new Date().getDay(), month: new Date().getMonth() + 1, year: new Date().getFullYear()})
@@ -168,8 +167,10 @@ export default function Page() {
   }, [serverID, updateCounter])
 
   useEffect(() => {
-    //@ts-expect-error because we can in fact call the function
-    setInvChatList(chatList.toReversed())
+    if(chatList != undefined) {
+      //@ts-expect-error because we can in fact call the function
+      setInvChatList(chatList.toReversed())
+    }
     setToday({day: new Date().getDay(), month: new Date().getMonth() + 1, year: new Date().getFullYear()})
     console.log(serverData, serverList, chatList, today)
   }, [serverData && chatList])
@@ -251,8 +252,8 @@ export default function Page() {
         <div style={sidedivL}>
           <div style={scrolldivB}>
             <div style={{marginLeft: "2vw"}}>
-              <div style={{fontSize: "28px", marginTop: "1%", marginBottom: "-1%"}}>{serverData[0].name}</div>
-              <div style={{marginBottom: "1.5%"}}>by {serverData[0].created_by_username}</div>
+              <div style={{fontSize: "28px", marginTop: "1%", marginBottom: "-1%"}}>{serverData[0]?.name}</div>
+              <div style={{marginBottom: "1.5%"}}>by {serverData[0]?.created_by_username}</div>
             </div>
             <hr style={{borderWidth: "1vh", borderColor: "black"}}/>
             <div style={{overflow: "auto", scrollBehavior: "smooth", display: "flex", flexDirection: "column-reverse"}}>
@@ -324,7 +325,7 @@ export default function Page() {
                 borderRadius: "8px",
               }}>
                 <div style={{margin: "3%"}}>
-                  <div style={{fontSize:"25px"}}>{userInfo?.user_metadata.username}</div>
+                  <div style={{fontSize:"25px"}}>{userInfo?.user_metadata.display_name}</div>
                   <hr style={{borderColor: "white"}} />
                   <div>{userInfo?.user_metadata.email}</div>
                   <div>joined us at: {userInfo?.created_at_date.day}.{userInfo?.created_at_date.month}.{userInfo?.created_at_date.year}</div>
