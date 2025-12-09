@@ -1,64 +1,59 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-export default function LoginPage() {
-    const [email, setEmail] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [sent, setSent] = useState(false)
+export default function MagicLinkPage() {
+    const supabase = createClient();
+    const [email, setEmail] = useState("");
+    const [message, setMessage] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const onSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-        setSent(false)
+    async function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setMessage(null);
+        setError(null);
+        setLoading(true);
 
         const { error } = await supabase.auth.signInWithOtp({
             email,
-            options: {
-                emailRedirectTo: 'http://localhost:3000/callback',
-            },
-        })
+            options: { emailRedirectTo: `${window.location.origin}/servers` },
+        });
 
-        if (error) {
-            alert(error.message)
-            setLoading(false)
-            return
-        }
-
-        setSent(true)
-        setLoading(false)
-    }
-
-    if (sent) {
-        return (
-            <main className="max-w-sm mx-auto mt-10 text-center">
-                <h1 className="text-xl font-semibold">Check your email</h1>
-                <p>We sent you a magic link to sign in.</p>
-            </main>
-        )
+        if (error) setError(error.message);
+        else setMessage("Magic link sent! Check your inbox.");
+        setLoading(false);
     }
 
     return (
-        <main className="max-w-sm mx-auto mt-10 space-y-4">
-            <h1 className="text-xl font-semibold text-center">Sign in</h1>
-            <form onSubmit={onSubmit} className="flex flex-col gap-3">
-                <input
+        <div className="mx-auto max-w-sm p-6 space-y-4">
+            <h1 className="text-2xl font-semibold">Sign in with Magic Link</h1>
+            <form onSubmit={onSubmit} className="space-y-3">
+                <Input
                     type="email"
-                    placeholder="you@example.com"
-                    className="w-full border rounded p-2"
-                    required
+                    placeholder="Email address"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="border px-3 py-2 rounded w-full hover:bg-gray-100 disabled:opacity-50"
-                >
-                    {loading ? 'Sending…' : 'Send magic link'}
-                </button>
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                {message && <p className="text-sm text-green-600">{message}</p>}
+                <Button type="submit" disabled={loading}>
+                    {loading ? "Sending..." : "Send Magic Link"}
+                </Button>
             </form>
-        </main>
-    )
+
+            <div className="text-sm text-muted-foreground">
+                <p className="mt-4">
+                    Prefer using password?{" "}
+                    <a href="/auth/sign-in" className="underline">
+                        Sign in with password
+                    </a>
+                </p>
+            </div>
+        </div>
+    );
 }
