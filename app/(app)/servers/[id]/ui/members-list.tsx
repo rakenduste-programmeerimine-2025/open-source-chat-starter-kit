@@ -39,16 +39,16 @@ export default async function MembersList({ serverId }: { serverId: string }) {
                 <li className="text-sm text-muted-foreground">No members yet.</li>
             ) : (
                 members.map((m) => {
-                    // show Remove only for managers and not for yourself
-                    const showRemove = Boolean(canManage && currentUserId && m.user_id !== currentUserId);
+                    const showRemove =
+                        Boolean(canManage && currentUserId && m.user_id !== currentUserId);
 
                     return (
                         <li
                             key={`${m.user_id}-${m.joined_at}`}
-                            className="flex items-start justify-between gap-3 rounded-lg border p-3"
+                            className="flex w-full items-start justify-between gap-3 rounded-lg border p-3 overflow-hidden"
                         >
-                            {/* left: user info */}
-                            <div className="min-w-0">
+                            {/* left: user info  */}
+                            <div className="flex-1 min-w-0">
                                 <div className="truncate font-mono text-xs" title={m.user_id}>
                                     {m.user_id}
                                 </div>
@@ -57,9 +57,9 @@ export default async function MembersList({ serverId }: { serverId: string }) {
                                 </div>
                             </div>
 
-                            {/* right: role + remove button */}
-                            <div className="ml-2 flex shrink-0 flex-wrap items-center gap-2">
-                                <span className="text-xs rounded-full border px-2 py-0.5">
+                            {/* right: role + remove */}
+                            <div className="ml-2 flex shrink-0 items-center gap-2">
+                                <span className="shrink-0 rounded-full border px-2 py-0.5 text-xs">
                                     {m.role}
                                 </span>
                                 {showRemove && (

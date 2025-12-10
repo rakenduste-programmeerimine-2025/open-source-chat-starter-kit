@@ -30,3 +30,41 @@ export async function createServerAction(formData: FormData) {
     revalidatePath("/servers");
     return { ok: true };
 }
+
+/**
+ * Deletes a server (messages -> members -> server).
+ * Only owner (created_by) can delete.
+ */
+export async function deleteServerAction(serverId: string) {
+    if (!serverId) throw new Error("Missing server id");
+
+    const supabase = createClient();
+
+    const { data: auth, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !auth?.user) redirect("/auth/login");
+    const meId = auth.user.id;
+
+    // check ownership
+    const { data: srv, error: srvErr } = await supabase
+        .from("servers")
+        .select("id, created_by")
+        .eq("id", serverId)
+        .maybeSingle();
+
+    if (srvErr) throw new Error(srvErr.message);
+    if (!srv) throw new Error("Server not found");
+    if (srv.created_by !== meId) throw new Error("Only the owner can delete this server");
+
+    // delete children first to avoid FK/RLS issues
+    const delMsgs = await supabase.from("messages").delete().eq("server_id", serverId);
+    if (delMsgs.error) throw new Error(delMsgs.error.message);
+
+    const delMembers = await supabase.from("server_members").delete().eq("server_id", serverId);
+    if (delMembers.error) throw new Error(delMembers.error.message);
+
+    const delServer = await supabase.from("servers").delete().eq("id", serverId);
+    if (delServer.error) throw new Error(delServer.error.message);
+
+    revalidatePath("/servers");
+    return { ok: true };
+}
