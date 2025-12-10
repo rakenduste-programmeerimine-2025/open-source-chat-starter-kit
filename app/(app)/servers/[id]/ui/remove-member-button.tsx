@@ -3,6 +3,17 @@
 import { useTransition, useState } from "react";
 import { removeMemberAction } from "../actions";
 import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 export default function RemoveMemberButton({
     serverId,
@@ -12,30 +23,58 @@ export default function RemoveMemberButton({
     memberUserId: string;
 }) {
     const [pending, start] = useTransition();
-    const [err, setErr] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [open, setOpen] = useState(false);
 
     return (
-        <div className="flex items-center gap-2">
-            <Button
-                variant="destructive"
-                size="sm"
-                disabled={pending}
-                onClick={() => {
-                    setErr(null);
-                    const ok = window.confirm("Remove this member from the server?");
-                    if (!ok) return;
-                    start(async () => {
-                        try {
-                            await removeMemberAction(serverId, memberUserId);
-                        } catch (e: unknown) {
-                            setErr(e instanceof Error ? e.message : "Failed to remove member");
-                        }
-                    });
-                }}
-            >
-                {pending ? "Removing…" : "Remove"}
-            </Button>
-            {err && <span className="text-xs text-red-600">{err}</span>}
-        </div>
+        <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" disabled={pending}>
+                    {pending ? "Removing…" : "Remove"}
+                </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Remove this member?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Are you sure you want to remove this member from the server?
+                        <br />
+                        <span className="font-mono text-xs text-muted-foreground">
+                            {memberUserId}
+                        </span>
+                        <br />
+                        This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                        className="bg-red-600 text-white hover:bg-red-700"
+                        disabled={pending}
+                        onClick={() => {
+                            setError(null);
+                            start(async () => {
+                                try {
+                                    await removeMemberAction(serverId, memberUserId);
+                                    setOpen(false);
+                                } catch (e: unknown) {
+                                    setError(
+                                        e instanceof Error ? e.message : "Failed to remove member"
+                                    );
+                                }
+                            });
+                        }}
+                    >
+                        {pending ? "Removing…" : "Remove"}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+
+                {error && (
+                    <p className="mt-2 text-xs text-red-600 text-center">{error}</p>
+                )}
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
