@@ -1,11 +1,10 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createRSCClient } from "@/lib/supabase/server-rsc";
 import MembersList from "./ui/members-list";
 import AddMemberForm from "./ui/add-member-form";
-import MessagesList from "./ui/messages-list";
 import PostMessageForm from "./ui/post-message-form";
 import MessagesPanel from "./ui/messages-panel";
-
 
 type RouteParams = { id: string };
 
@@ -29,7 +28,7 @@ export default async function ServerViewPage({
     if (error) throw new Error(error.message);
     if (!data) notFound();
 
-    // initial messages for MessagesPanel
+    // initial messages for MessagesPanel (latest 10, then ascending)
     const { data: initialDesc, error: msgsErr } = await supabase
         .from("messages")
         .select("id, server_id, sender_id, message, sent_on")
@@ -39,9 +38,8 @@ export default async function ServerViewPage({
 
     if (msgsErr) throw new Error(msgsErr.message);
 
-    const initialItems = (initialDesc ?? []).reverse();
-
-
+    const initialItems =
+        (initialDesc ?? []).reverse(); // asc for render
 
     return (
         <main className="w-full p-6">
@@ -72,18 +70,18 @@ export default async function ServerViewPage({
                         </header>
 
                         <div className="flex gap-3">
-                            <a
+                            <Link
                                 href={`/servers/${data.id}/edit`}
                                 className="text-sm underline underline-offset-2 hover:text-primary"
                             >
                                 Edit
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 href="/servers"
                                 className="text-sm underline underline-offset-2 hover:text-primary"
                             >
                                 Back
-                            </a>
+                            </Link>
                         </div>
                     </section>
 
@@ -101,21 +99,18 @@ export default async function ServerViewPage({
                 </aside>
 
                 {/* RIGHT: CHAT COLUMN */}
-                <section className="flex min-h-[calc(100vh-120px)] flex-col rounded-xl border">
-                    {/* history (scroll area) */}
-                    <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                <section className="flex h-screen max-h-screen min-h-0 flex-1 flex-col">
+                    {/* messages list (scrolls) */}
+                    <div className="min-h-0 flex-1">
                         <MessagesPanel serverId={data.id} initialItems={initialItems} />
                     </div>
 
-                    {/* input */}
-                    <div className="border-t p-4">
-                        <div className="mx-auto max-w-2xl">
-                            <PostMessageForm serverId={data.id} />
-                        </div>
+                    {/* input bar (pinned at bottom) */}
+                    <div className="border-t bg-background p-3">
+                        <PostMessageForm serverId={data.id} />
                     </div>
                 </section>
             </div>
         </main>
     );
-
 }
