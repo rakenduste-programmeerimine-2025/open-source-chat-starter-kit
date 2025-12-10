@@ -18,6 +18,10 @@ export default function MePage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // добавили состояние для ID/Email пользователя
+    const [userId, setUserId] = useState<string>("");
+    const [userEmail, setUserEmail] = useState<string>("");
+
     useEffect(() => {
         (async () => {
             const supabase = createBrowserSupabaseClient();
@@ -26,10 +30,13 @@ export default function MePage() {
                 error: userErr,
             } = await supabase.auth.getUser();
             if (userErr || !user) {
-                // при желании можно поменять на /auth/sign-in
                 window.location.href = "/auth/login";
                 return;
             }
+
+            // сохраним ID/Email для вывода
+            setUserId(user.id);
+            setUserEmail(user.email ?? "");
 
             const { data } = await supabase
                 .from("profiles")
@@ -100,6 +107,34 @@ export default function MePage() {
             </header>
 
             <div className="rounded-xl border p-4 space-y-4">
+                {/* Блок аккаунта: Email + User ID с копированием */}
+                <div className="space-y-2">
+                    {userEmail && (
+                        <div>
+                            <label className="block text-sm mb-1">Email</label>
+                            <div className="text-sm">{userEmail}</div>
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-sm mb-1">User ID</label>
+                        <div className="flex items-center gap-2">
+                            <code className="bg-muted rounded px-2 py-1 text-xs break-all">
+                                {userId}
+                            </code>
+                            <button
+                                type="button"
+                                className="text-xs underline hover:text-primary"
+                                onClick={() => {
+                                    if (userId) navigator.clipboard.writeText(userId);
+                                }}
+                            >
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="flex items-center gap-4">
                     {profile?.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
