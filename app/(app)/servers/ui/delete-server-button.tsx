@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     AlertDialog,
     AlertDialogTrigger,
@@ -15,25 +16,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { deleteServerAction } from "../actions";
 
-/**
- * DeleteServerButton — кнопка удаления сервера с красивым подтверждением.
- * Использует AlertDialog из shadcn/ui вместо window.confirm.
- */
 export default function DeleteServerButton({
     id,
     name,
 }: {
     id: string;
-    name: string;
+    name?: string;
 }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     async function handleDelete() {
         try {
             setLoading(true);
-            await deleteServerAction(id);
+            await deleteServerAction(id); // <-- передаем ID напрямую
             setOpen(false);
+            router.refresh();             // мгновенно обновляем список на /servers
         } finally {
             setLoading(false);
         }
@@ -42,25 +41,25 @@ export default function DeleteServerButton({
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-20">
-                    Delete
-                </Button>
+                {/* НЕ submit-кнопка, просто обычная */}
+                <Button variant="destructive">Delete</Button>
             </AlertDialogTrigger>
 
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Delete server “{name}”?
+                        Delete server{name ? ` “${name}”` : ""}?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete
-                        the server and all its data.
+                        This action cannot be undone. It will permanently remove the server and all associated data.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+                    {/* ВАЖНО: type="button", чтобы НЕ сабмитить родительскую форму */}
                     <AlertDialogAction
+                        type="button"
                         onClick={handleDelete}
                         disabled={loading}
                         className="bg-red-600 hover:bg-red-700 text-white"

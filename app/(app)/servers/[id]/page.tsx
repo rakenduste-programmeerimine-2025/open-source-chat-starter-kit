@@ -1,9 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { createRSCClient } from "@/lib/supabase/server-rsc";
+
 import MembersList from "./ui/members-list";
 import AddMemberForm from "./ui/add-member-form";
 import PostMessageForm from "./ui/post-message-form";
 import MessagesPanel from "./ui/messages-panel";
+import { getServerSettings } from "./actions";
 
 type RouteParams = { id: string };
 
@@ -18,14 +20,16 @@ export default async function ServerViewPage({
     const { data: userData } = await supabase.auth.getUser();
     if (!userData?.user) redirect("/auth/login");
 
-    const { data, error } = await supabase
+    const { data: server, error } = await supabase
         .from("servers")
         .select("id, name, image_url, created_at")
         .eq("id", serverId)
         .maybeSingle();
 
     if (error) throw new Error(error.message);
-    if (!data) notFound();
+    if (!server) notFound();
+
+    const settings = await getServerSettings(serverId);
 
     const { data: initialDesc, error: msgsErr } = await supabase
         .from("messages")
@@ -37,10 +41,11 @@ export default async function ServerViewPage({
     if (msgsErr) throw new Error(msgsErr.message);
     const initialItems = (initialDesc ?? []).reverse();
 
-    // 👉 здесь возвращаем JSX с правильным синтаксисом
     return (
-        // фиксируем контент под navbar
-        <main className="fixed inset-x-0 bottom-0 top-12 overflow-hidden">
+        <main
+            className="fixed inset-x-0 bottom-0 top-12 overflow-hidden"
+            style={{ backgroundColor: settings.page_bg }} // фон всей страницы
+        >
             <div className="h-full w-full p-6">
                 <div className="grid h-full grid-cols-1 gap-6 md:grid-cols-[320px,1fr]">
                     {/* LEFT SIDEBAR */}
@@ -48,30 +53,30 @@ export default async function ServerViewPage({
                         {/* Server info */}
                         <section className="rounded-xl border p-4">
                             <header className="mb-3 flex items-center gap-3">
-                                {data.image_url ? (
+                                {server.image_url ? (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
-                                        src={data.image_url}
-                                        alt={data.name}
+                                        src={server.image_url}
+                                        alt={server.name}
                                         className="h-12 w-12 rounded-lg border object-cover"
                                     />
                                 ) : (
                                     <div className="flex h-12 w-12 items-center justify-center rounded-lg border text-sm font-semibold">
-                                        {data.name.slice(0, 2).toUpperCase()}
+                                        {server.name.slice(0, 2).toUpperCase()}
                                     </div>
                                 )}
                                 <div>
-                                    <h1 className="text-lg font-semibold">{data.name}</h1>
+                                    <h1 className="text-lg font-semibold">{server.name}</h1>
                                     <p className="text-xs text-muted-foreground">
                                         Created:{" "}
-                                        {new Date(data.created_at ?? Date.now()).toLocaleString()}
+                                        {new Date(server.created_at ?? Date.now()).toLocaleString()}
                                     </p>
                                 </div>
                             </header>
 
                             <div className="flex gap-3">
                                 <a
-                                    href={`/servers/${data.id}/edit`}
+                                    href={`/servers/${server.id}/edit`}
                                     className="text-sm underline underline-offset-2 hover:text-primary"
                                 >
                                     Edit
@@ -88,23 +93,37 @@ export default async function ServerViewPage({
                         {/* Invite member */}
                         <section className="rounded-xl border p-4">
                             <h2 className="mb-3 text-sm font-semibold">Invite member</h2>
-                            <AddMemberForm serverId={data.id} />
+                            <AddMemberForm serverId={server.id} />
                         </section>
 
                         {/* Members */}
                         <section className="rounded-xl border p-4">
                             <h2 className="mb-3 text-sm font-semibold">Members</h2>
-                            <MembersList serverId={data.id} />
+                            <MembersList serverId={server.id} />
                         </section>
                     </aside>
 
                     {/* RIGHT COLUMN (CHAT) */}
-                    <section className="flex h-full min-h-0 flex-col">
+                    <section
+                        className="flex h-full min-h-0 flex-col"
+                        style={{ backgroundColor: settings.background_color }} // column colour
+                    >
                         <div className="min-h-0 flex-1 overflow-y-auto">
-                            <MessagesPanel serverId={data.id} initialItems={initialItems} />
+                            <MessagesPanel
+                                serverId={server.id}
+                                initialItems={initialItems}
+                                settings={{
+                                    show_user: settings.show_user,
+                                    timestamp_format: settings.timestamp_format,
+                                    message_density: settings.message_density,
+                                    message_bg: settings.message_bg,
+                                    message_text: settings.message_text,
+                                }}
+                            />
                         </div>
+
                         <div className="border-t bg-background p-3">
-                            <PostMessageForm serverId={data.id} />
+                            <PostMessageForm serverId={server.id} />
                         </div>
                     </section>
                 </div>

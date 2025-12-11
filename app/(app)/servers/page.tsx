@@ -79,7 +79,7 @@ export default async function ServersPage() {
                                         Edit
                                     </Link>
                                     {isOwner && (
-                                        <DeleteServerButton serverId={s.id} serverName={s.name} />
+                                        <DeleteServerButton id={s.id} name={s.name} />
                                     )}
                                 </div>
                             </li>
